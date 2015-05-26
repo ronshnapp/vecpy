@@ -26,7 +26,9 @@ def get_dt(fname,path):
 def get_data(fname,path):
     """this function gathers and retuens the data found in
     a single .vec file"""
-    os.chdir(path)
+    
+    # os.chdir(path)
+    fname = os.path.join(os.path.abspath(path),fname) # just make a full path name 
     data = np.genfromtxt(fname,skip_header=1,delimiter=',',usecols=(0,1,2,3,4))
     return data
 	
