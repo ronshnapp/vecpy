@@ -27,7 +27,7 @@ def get_data(fname,path):
     """this function gathers and retuens the data found in
     a single .vec file"""
     os.chdir(path)
-    data = np.genfromtxt(fname,skip_header=1,delimiter=',',usecols=(0,1,2,3))
+    data = np.genfromtxt(fname,skip_header=1,delimiter=',',usecols=(0,1,2,3,4))
     return data
 	
 def read_directory(dirname):
@@ -53,11 +53,8 @@ def vecToMatrix(data):
     X,Y = meshgrid(x,y)
     u1 = reshape(data[:,2],shape(X))
     v1 = reshape(data[:,3],shape(Y))*-1
-    U,V = zeros(shape(u1)),zeros(shape(u1))
-    for i in range(len(v1)):
-        V[-i,:] = v1[i,:]
-        U[-i,:] = u1[i,:]
-    return (X,Y,U,V)
+    chc = reshape(data[:,4],shape(X))  
+    return (X,Y,u1,v1,chc)
     
 def genQuiver(vec):
     """
@@ -67,7 +64,9 @@ def genQuiver(vec):
     mpl.contourf(vec.X,vec.Y,sqrt(vec.U**2+vec.V**2),alpha=0.3)
     cbar = mpl.colorbar()
     cbar.set_label(r'Velocity [m $\cdot$ s$^{-1}$]')
-    mpl.quiver(vec.X,vec.Y,vec.U,vec.V)
+    mpl.quiver(vec.X,vec.Y,vec.U,vec.V,scale=2000)
+    mpl.xlabel('x ['+vec.length+']')
+    mpl.ylabel('y ['+vec.length+']')
     return
     
 def fit2LLK(vec):
@@ -98,6 +97,8 @@ def genVorticityMap(vec):
     dy = gradient(vec.Y)[1]
     vorticity = dVx/dy-dUy/dx
     plt.contourf(vec.X,vec.Y,vorticity)
+    plt.xlabel('x ['+vec.length+']')
+    plt.ylabel('y ['+vec.length+']')
     cbar = plt.colorbar()
     cbar.set_label(r'Vorticity [s$^{-1}$]')
     return

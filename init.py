@@ -15,21 +15,22 @@ from loadvec import *
 from vecClass import *
 
 
-path = 'C:/Users/Ron/Desktop/Ron_LLK_PIV_data/Analysis'
-fname = 'camera3_LLK001612.T000.D000.P052.H008.L.vec'
+path = 'C:/Users/Ron/Desktop/studies/thesis/master_thesis/experimental_work/LLK_Laser_PIV_21052015/Analysis'
+fname = 'camera3_LLK001010.T000.D000.P052.H001.L.vec'
 
-X,Y,U,V = vecToMatrix(get_data(fname,path))
+X,Y,U,V,CHC = vecToMatrix(get_data(fname,path))
 dt = get_dt(fname,path)
-vec = vec(X,Y,U,V,dt)
+vec = vec(X,Y,U,V,CHC,dt,Lunits='mm')
 resolution = 1.0/71.96 #[mm/px]
 
-vec.rotate(-90)
+#vec.rotate(-90)
 vec.scale(resolution)
-vec.crop(-30,-5,15,30)
+vec.crop(20,40,15,30)
 vec.getVelStat()
 vec.filterVelocity('med')   # med / gauss
 genQuiver(vec)
-plt.figure()
-genVelHist(vec)
-plt.figure()
-genVorticityMap(vec)
+#contourf(vec.X,vec.Y,vec.CHC,alpha=0.5)
+#plt.figure()
+#genVelHist(vec)
+#plt.figure()
+#genVorticityMap(vec)

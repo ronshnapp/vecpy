@@ -11,12 +11,15 @@ from scipy.ndimage.filters import median_filter
 
 class vec:
     
-    def __init__(self,X,Y,U,V,dt):
+    def __init__(self,X,Y,U,V,CHC,dt,Lunits='m',tunits='s'):
         self.X = X
         self.Y = Y
         self.U = U
         self.V = V
+        self.CHC = CHC
         self.dt = dt
+        self.length = Lunits
+        self.time = tunits
         
     def rotate(self,theta):
         """ 
@@ -26,10 +29,10 @@ class vec:
         theta = theta/360.0*2*pi
         xi = self.X*cos(theta)+self.Y*sin(theta)
         eta = self.Y*cos(theta)-self.X*sin(theta)
+        print shape(xi),shape(eta)
         Uxi = self.U*cos(theta)+self.V*sin(theta)
         Ueta = self.V*cos(theta)-self.U*sin(theta)
-        self.X = xi
-        self.Y = eta
+        self.X, self.Y = xi, eta
         self.U = Uxi
         self.V = Ueta
         
@@ -60,19 +63,17 @@ class vec:
         of the vector field difined as the region between 
         (xmin,ymin) and (xmax,ymax) 
         """
-        x = self.X[:,0]
-        y = self.Y[0,:]
-        il,ih,jl,jh = -1,-1,-1,-1,
-        for i in range(len(x)-1):
-            if x[i]>xmin and x[i+1]<xmin:
-                ih = i
-            elif x[i]>xmax and x[i+1]<xmax:
-                il = i
-        for j in range(len(y)-1):
-            if y[j]<ymin and y[j+1]>ymin:
-                jl = j
-            elif y[j]<ymax and y[j+1]>ymax:
-                jh = j
+        x = self.X[0,:]
+        y = self.Y[:,0]
+        xx, yy = [], []
+        for i in range(len(x)):
+            if x[i]>xmin and x[i]<xmax:
+                xx.append(i)
+        for i in range(len(y)):
+            if y[i]>ymin and y[i]<ymax:
+                yy.append(i)
+        print x[0],x[-1],y[0],y[-1]
+        jl,jh,il,ih = min(xx),max(xx),min(yy),max(yy)
         for i in [il,ih,jl,jh]: 
             if i==-1: 
                 print 'error with limits the were given'
@@ -81,6 +82,7 @@ class vec:
         self.Y = self.Y[il:ih,jl:jh]
         self.U = self.U[il:ih,jl:jh]
         self.V = self.V[il:ih,jl:jh]
+        
         
     def getVelStat(self):
         """
