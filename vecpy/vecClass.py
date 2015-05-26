@@ -104,15 +104,18 @@ class vec:
         self.Umean, self.Ustd = norm.fit(u)
         self.Vmean, self.Vstd = norm.fit(v)
         
-    def filterVelocity(self,filtr = 'med'):
+    def filterVelocity(self,filtr = 'med',size=(4,4)):
         """
         this method passes the velocity vectors U and V
-        through a either a 4X4 median filter or a gaussian
+        through a either a 4 x 4 median filter or a gaussian
         filter with sigma = 1
+        Inputs: 
+            filtr = 'med' (default), 'gauss', string
+            size  = (4,4) default, tuple
         """
         if filtr == 'med':
-            self.U = median_filter(self.U,size=(4,4))
-            self.V = median_filter(self.V,size=(4,4))
+            self.U = median_filter(self.U,size=size)
+            self.V = median_filter(self.V,size=size)
         elif filtr == 'gauss':
             self.U = gaussian_filter(self.U,1)
             self.V = gaussian_filter(self.V,1)
