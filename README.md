@@ -9,3 +9,10 @@ This repository contains the code of a Python based module that is made for the 
 
 to start working just download the code and run the init.py script file.
 this script imports all the other code needed for running the program properly. also, given a proper path destination and a file name of an example .vec file, this script will generate example plots.    
+
+
+### How to test? ### 
+
+From a command line just use:
+
+    nosetests
