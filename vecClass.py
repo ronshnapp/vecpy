@@ -20,6 +20,7 @@ class vec:
         self.dt = dt
         self.length = Lunits
         self.time = tunits
+        self.theta = 0
         
     def rotate(self,theta):
         """ 
@@ -29,12 +30,12 @@ class vec:
         theta = theta/360.0*2*pi
         xi = self.X*cos(theta)+self.Y*sin(theta)
         eta = self.Y*cos(theta)-self.X*sin(theta)
-        print shape(xi),shape(eta)
         Uxi = self.U*cos(theta)+self.V*sin(theta)
         Ueta = self.V*cos(theta)-self.U*sin(theta)
         self.X, self.Y = xi, eta
         self.U = Uxi
         self.V = Ueta
+        self.theta = self.theta + theta 
         
     def scale(self,resolution):
         """
@@ -72,7 +73,6 @@ class vec:
         for i in range(len(y)):
             if y[i]>ymin and y[i]<ymax:
                 yy.append(i)
-        print x[0],x[-1],y[0],y[-1]
         jl,jh,il,ih = min(xx),max(xx),min(yy),max(yy)
         for i in [il,ih,jl,jh]: 
             if i==-1: 
@@ -82,6 +82,7 @@ class vec:
         self.Y = self.Y[il:ih,jl:jh]
         self.U = self.U[il:ih,jl:jh]
         self.V = self.V[il:ih,jl:jh]
+        self.CHC = self.CHC[il:ih,jl:jh]
         
         
     def getVelStat(self):
@@ -90,9 +91,18 @@ class vec:
         data, this method calculates its mean and standard
         deviation values and assigns them to new atribtes
         of the instance vec.
+        this methid does not take into account values of 
+        the velocity that insight had spotted as irregular
+        values (aka CHC=-1)
         """
-        self.Umean, self.Ustd = norm.fit(self.U)
-        self.Vmean, self.Vstd = norm.fit(self.V)
+        u, v = [], [] 
+        for i in range(shape(self.U)[0]):
+            for j in range(shape(self.U)[1]):
+                if self.CHC[i][j] == 1:
+                    u.append(self.U[i][j])
+                    v.append(self.V[i][j])
+        self.Umean, self.Ustd = norm.fit(u)
+        self.Vmean, self.Vstd = norm.fit(v)
         
     def filterVelocity(self,filtr = 'med'):
         """

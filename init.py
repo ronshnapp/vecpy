@@ -23,14 +23,14 @@ dt = get_dt(fname,path)
 vec = vec(X,Y,U,V,CHC,dt,Lunits='mm')
 resolution = 1.0/71.96 #[mm/px]
 
-#vec.rotate(-90)
+vec.rotate(-90)
 vec.scale(resolution)
-vec.crop(20,40,15,30)
-vec.getVelStat()
-vec.filterVelocity('med')   # med / gauss
+#vec.crop(20,40,15,30)
+#vec.getVelStat()
+#vec.filterVelocity('med')   # med / gauss
 genQuiver(vec)
 #contourf(vec.X,vec.Y,vec.CHC,alpha=0.5)
 #plt.figure()
 #genVelHist(vec)
-#plt.figure()
-#genVorticityMap(vec)
+plt.figure()
+genVorticityMap(vec)
