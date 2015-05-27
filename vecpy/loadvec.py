@@ -30,7 +30,7 @@ def get_data(fname,path):
     """this function gathers and retuens the data found in
     a single .vec file"""
     fname = os.path.join(os.path.abspath(path),fname) # just make a full path name 
-    if lower(fname).endswith('.vec'):
+    if fname.lower().endswith('.vec'):
         data = np.genfromtxt(fname,skip_header=1,delimiter=',',usecols=(0,1,2,3,4))
     else:
         raise 'Wrong file extension'
