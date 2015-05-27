@@ -1,1 +1,7 @@
 doc/build
+build
+dist
+vecPy.egg-info/dependency_links.txt
+vecPy.egg-info/PKG-INFO
+vecPy.egg-info/SOURCES.txt
+vecPy.egg-info/top_level.txt

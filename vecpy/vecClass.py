@@ -4,59 +4,83 @@ Created on Sun May 24 22:02:49 2015
 
 @author: Ron
 """
-from numpy import *
+from numpy import sin, cos, pi, asarray
 from scipy.stats import norm
 from scipy.ndimage.filters import gaussian_filter
 from scipy.ndimage.filters import median_filter
 
 class vec:
     
-    def __init__(self,X,Y,U,V,CHC,dt,Lunits='m',tunits='s'):
-        self.X = X
-        self.Y = Y
-        self.U = U
-        self.V = V
-        self.CHC = CHC
+    def __init__(self,x,y,u,v,chc,dt,lUnits='m',tUnits='s'):
+        """ basic class that will hold the velocity field
+            x,y are coordinates in lUnits
+            u,v are velocity components in lUnits/tUnits
+            CHC is some marker of bad vectors
+            theta is not so clear but it's a global orientation angle, in degrees
+            properties:
+            lUnits, default is 'm'
+            tUnits, default is 's'
+            velUnits, derived from  lUnits, tUnits
+        """
+        self.x = x
+        self.y = y
+        self.u = u
+        self.v = v
+        self.chc = chc
         self.dt = dt
-        self.length = Lunits
-        self.time = tunits
-        self.theta = 0
-        
-    def rotate(self,theta):
+        self.lUnits = lUnits
+        self.tUnits = tUnits
+        self.velUnits = lUnits + '/' + tUnits
+        self.theta = 0.0 # what is theta ? 
+    
+    def set_dt(self,dt):
+        self.dt = dt
+    
+    def get_dt(self):
+        return self.dt
+    
+    def set_Lunits(self,Lunits = 'm'):
+        self.lUnits = lUnits # default is meter
+    
+    def set_tUnits(self,tUnits = 's'):
+        self.tUnits = tUnits # default is sec
+            
+    def rotate(self,theta=0.0):
         """ 
         use this method in order to rotate the data 
-        by theta degrees in the clock wise direction
+        by theta degrees in the clockwise direction
         """
+        
         theta = theta/360.0*2*pi
-        xi = self.X*cos(theta)+self.Y*sin(theta)
-        eta = self.Y*cos(theta)-self.X*sin(theta)
-        Uxi = self.U*cos(theta)+self.V*sin(theta)
-        Ueta = self.V*cos(theta)-self.U*sin(theta)
-        self.X, self.Y = xi, eta
-        self.U = Uxi
-        self.V = Ueta
-        self.theta = self.theta + theta 
+        
+        xi = self.x*cos(theta) + self.y*sin(theta)
+        eta = self.y*cos(theta) - self.x*sin(theta)
+        Uxi = self.u*cos(theta) + self.v*sin(theta)
+        Ueta = self.v*cos(theta) - self.u*sin(theta)
+        self.x, self.y = xi, eta
+        self.u, self.v  = Uxi, Ueta
+        self.theta = self.theta + theta # this is not clear what theta defines 
         
     def scale(self,resolution):
         """
-        use this method to fux the resilution of the 
+        use this method to fux the resolution of the 
         vector from [px/frame] to [m/sec] or any similar
         - resolution should be in [length/px]
         - time is generated from the original file and
-          it is in seconds
+          it is in seconds - BUG: MICROSECONDS?
         """
-        self.X=self.X*resolution
-        self.Y=self.Y*resolution
-        self.U=self.U*resolution/(self.dt*1e-6)
-        self.V=self.V*resolution/(self.dt*1e-6)
+        self.x = self.x*resolution
+        self.y = self.y*resolution
+        self.u = self.u*resolution/(self.dt*1e-6) #BUG: MICROSECONDS?
+        self.v = self.v*resolution/(self.dt*1e-6)
         
     def move(self,dx,dy):
         """
         use this method to move the origin of the frame
         by dx and dy
         """
-        self.X=self.X+dx
-        self.Y=self.Y+dy
+        self.x = self.x + dx
+        self.y = self.y + dy
         
     def crop(self,xmin,xmax,ymin,ymax):
         """
@@ -95,12 +119,10 @@ class vec:
         the velocity that insight had spotted as irregular
         values (aka CHC=-1)
         """
-        u, v = [], [] 
-        for i in range(shape(self.U)[0]):
-            for j in range(shape(self.U)[1]):
-                if self.CHC[i][j] == 1:
-                    u.append(self.U[i][j])
-                    v.append(self.V[i][j])
+        # we need to use numpy way:
+        
+        u = self.u.flatten()
+        v = self.v.flatten()
         self.Umean, self.Ustd = norm.fit(u)
         self.Vmean, self.Vstd = norm.fit(v)
         
@@ -114,10 +136,10 @@ class vec:
             size  = (4,4) default, tuple
         """
         if filtr == 'med':
-            self.U = median_filter(self.U,size=size)
-            self.V = median_filter(self.V,size=size)
+            self.u = median_filter(self.u,size=size)
+            self.v = median_filter(self.v,size=size)
         elif filtr == 'gauss':
-            self.U = gaussian_filter(self.U,1)
-            self.V = gaussian_filter(self.V,1)
+            self.u = gaussian_filter(self.u,1)
+            self.v = gaussian_filter(self.v,1)
         else: print "Bad choise of filter! - try again"
         
