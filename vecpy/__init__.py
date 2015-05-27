@@ -9,7 +9,7 @@ import sys
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 from loadvec import *
 from vecClass import *
-from vecPlot import *
+from vecplot import *
 from numpy import *
 import numpy as np
 import matplotlib.pylab as mpl
