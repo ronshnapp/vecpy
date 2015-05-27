@@ -95,12 +95,7 @@ class vec:
         the velocity that insight had spotted as irregular
         values (aka CHC=-1)
         """
-        u, v = [], [] 
-        for i in range(shape(self.U)[0]):
-            for j in range(shape(self.U)[1]):
-                if self.CHC[i][j] == 1:
-                    u.append(self.U[i][j])
-                    v.append(self.V[i][j])
+        u, v = self.U.flatten(), self.V.flatten() 
         self.Umean, self.Ustd = norm.fit(u)
         self.Vmean, self.Vstd = norm.fit(v)
         
