@@ -33,7 +33,7 @@ def genVelHist(vec):
     the velocity data. the velocity in the histpgram 
     contains all the data set such that CHC == 1
     """
-    u1, v1 = vec.u.flatten(), vec.V.flatten()
+    u1, v1 = vec.u.flatten(), vec.v.flatten()
     ax1 = plt.subplot2grid((2,1),(0,0))
     ax1.hist(u1,bins=np.sqrt(len(u1))*0.5,normed=1)
     ax1.set_xlabel('u [mm/sec]')

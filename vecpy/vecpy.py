@@ -87,8 +87,8 @@ class vec:
         of the vector field difined as the region between 
         (xmin,ymin) and (xmax,ymax) 
         """
-        x = self.X[0,:]
-        y = self.Y[:,0]
+        x = self.x[0,:]
+        y = self.y[:,0]
         xx, yy = [], []
         for i in range(len(x)):
             if x[i]>xmin and x[i]<xmax:
@@ -101,11 +101,11 @@ class vec:
             if i==-1: 
                 print 'error with limits the were given'
                 return
-        self.X = self.X[il:ih,jl:jh]
-        self.Y = self.Y[il:ih,jl:jh]
-        self.U = self.U[il:ih,jl:jh]
-        self.V = self.V[il:ih,jl:jh]
-        self.CHC = self.CHC[il:ih,jl:jh]
+        self.x = self.X[il:ih,jl:jh]
+        self.y = self.Y[il:ih,jl:jh]
+        self.u = self.U[il:ih,jl:jh]
+        self.v = self.V[il:ih,jl:jh]
+        self.chc = self.CHC[il:ih,jl:jh]
         
         
     def getVelStat(self):
