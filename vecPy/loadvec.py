@@ -4,21 +4,24 @@
 addapted from Alex Liberzon's code.
 extended by Ron Shnapp 24.5.15
 
-this module is dedicated to loading the data within a .vec file
-and using it to create instances of a vec object.
+
 """
 import os
 import numpy as np
 from numpy import *
-
+import matplotlib.pylab as mpl
+import matplotlib.pyplot as plt
+from vecpy import vecClass
 
 def get_dt(fname,path):
     """given a .vec file this will return the delta t 
     from the file in micro seconds"""
-    os.chdir(path)
-    f = open(fname)
-    header = f.readline()
-    f.close()
+    # os.chdir(path) BUG
+    fname = os.path.join(os.path.abspath(path),fname) # just make a full path name 
+    # new way of opening and closing the file
+    with open(fname) as f:
+        header = f.readline()
+        
     ind1 = header.find('MicrosecondsPerDeltaT')
     dt = float(header[ind1:].split('"')[1])
     return dt
