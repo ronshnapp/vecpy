@@ -10,7 +10,6 @@ from scipy.ndimage.filters import gaussian_filter
 from scipy.ndimage.filters import median_filter
 
 class vec:
-    
     def __init__(self,x,y,u,v,chc,dt,lUnits='m',tUnits='s'):
         """ basic class that will hold the velocity field
             x,y are coordinates in lUnits

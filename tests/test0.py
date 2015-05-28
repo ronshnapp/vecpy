@@ -1,8 +1,8 @@
 #!/usr/bin/python
 
-from vecPy import loadvec
-from vecPy import vecPlot
-from vecPy.vecClass import vec
+from vecpy import loadvec
+from vecpy import vecplot
+from vecpy.vecpy import vec
 import matplotlib.pyplot as plt
 
 
@@ -19,10 +19,10 @@ vec.rotate(-90)
 vec.scale(resolution)
 
 plt.figure()
-vecPlot.genQuiver(vec)
+vecplot.genQuiver(vec)
 plt.show()
 
 plt.figure()
-vecPlot.genVorticityMap(vec)
+vecplot.genVorticityMap(vec)
 plt.show()
 

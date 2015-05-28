@@ -11,7 +11,7 @@ import numpy as np
 from numpy import *
 import matplotlib.pylab as mpl
 import matplotlib.pyplot as plt
-from vecpy.vec_class import vecClass
+from vecpy import vec
 
 def get_dt(fname,path):
     """given a .vec file this will return the delta t 
