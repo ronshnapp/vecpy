@@ -19,13 +19,13 @@ def genQuiver(vec):
     this function will generate a quiver plot from a vec 
     object    
     """
-    mpl.contourf(vec.X,vec.Y,sqrt(vec.U**2+vec.V**2),alpha=0.3)
+    mpl.contourf(vec.x,vec.y,sqrt(vec.u**2+vec.v**2),alpha=0.3)
     cbar = mpl.colorbar()
     cbar.set_label(r'Velocity [m $\cdot$ s$^{-1}$]')
-    mpl.quiver(vec.X,vec.Y,vec.U,vec.V,units='width',scale=amax(sqrt(vec.U**2+vec.V**2))*25.0,headwidth=2 )
-    mpl.xlabel('x ['+vec.length+']')
-    mpl.ylabel('y ['+vec.length+']')
-    return
+    mpl.quiver(vec.x,vec.y,vec.u,vec.v,units='width',scale=amax(sqrt(vec.u**2+vec.v**2))*25.0,headwidth=2 )
+    mpl.xlabel('x [' + vec.lUnits + ']')
+    mpl.ylabel('y [' + vec.lUnits + ']')
+    
     
 def genVelHist(vec):
     """

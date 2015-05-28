@@ -29,8 +29,23 @@ def get_dt(fname,path):
 def get_data(fname,path):
     """this function gathers and retuens the data found in
     a single .vec file"""
-    os.chdir(path)
-    data = np.genfromtxt(fname,skip_header=1,delimiter=',',usecols=(0,1,2,3,4))
+    fname = os.path.join(os.path.abspath(path),fname) # just make a full path name 
+    if fname.lower().endswith('.vec'):
+        data = np.genfromtxt(fname,skip_header=1,delimiter=',',usecols=(0,1,2,3,4))
+    else:
+        raise 'Wrong file extension'
+        
+    return data
+    
+def get_data_openpiv(fname,path):
+    """this function gathers and retuens the data found in
+    a single .txt file"""
+    fname = os.path.join(os.path.abspath(path),fname)
+    if fname.endswith('.txt'): 
+        data = np.genfromtxt(fname,usecols=(0,1,2,3,4))
+    else:
+        raise 'Wrong file extension'
+    
     return data
 	
 def read_directory(dirname):
