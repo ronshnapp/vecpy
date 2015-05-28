@@ -7,9 +7,11 @@ This repository contains the code of a Python based module that is made for the 
 
 ### How do I get set up? ###
 
-to start working just download the code and run the init.py script file.
-this script imports all the other code needed for running the program properly. also, given a proper path destination and a file name of an example .vec file, this script will generate example plots.    
+to start working just download the code and the tests (see below). 
+if you want to know how this is done, see in the folder tests/
 
+the tests imports all the other code needed for running the program properly. also, given a proper path destination and a file name of an example .vec file, this script will generate example plots. 
+it is now also possible to read OpenPIV (www.openpiv.net) TXT files
 
 ### How to test? ### 
 
