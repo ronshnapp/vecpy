@@ -1,8 +1,8 @@
 #!/usr/bin/python
 
-from vecPy import loadvec
-from vecPy import vecPlot
-from vecPy.vecClass import vec
+from vecpy import loadvec
+from vecpy import vecplot
+from vecpy.vec_class import vec
 import matplotlib.pyplot as plt
 
 
@@ -20,10 +20,10 @@ resolution = 1.0/71.96 #[mm/px]
 vec.scale(resolution)
 
 plt.figure()
-vecPlot.genQuiver(vec)
+vecplot.genQuiver(vec)
 plt.show()
 
 plt.figure()
-vecPlot.genVorticityMap(vec)
+vecplot.genVorticityMap(vec)
 plt.show()
 
