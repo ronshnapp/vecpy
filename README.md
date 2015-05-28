@@ -18,3 +18,9 @@ it is now also possible to read OpenPIV (www.openpiv.net) TXT files
 From a command line just use:
 
     nosetests
+    
+
+### How to help? ###
+
+Read the ToDo file and pick one item to program. Use Fork-Develop-Pull Request model to 
+contribute
