@@ -1,8 +1,8 @@
 #!/usr/bin/python
 
-from vecpy import loadvec
-from vecpy import vecPlot
-from vecpy.vecClass import vec
+from vecPy import loadvec
+from vecPy import vecPlot
+from vecPy.vecClass import vec
 import matplotlib.pyplot as plt
 
 
