@@ -2,7 +2,7 @@
 
 from vecpy import loadvec
 from vecpy import vecplot
-from vecpy.vec_class import vec
+from vecpy.vecpy import vec
 import matplotlib.pyplot as plt
 
 
