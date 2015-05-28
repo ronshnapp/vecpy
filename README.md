@@ -18,3 +18,18 @@ it is now also possible to read OpenPIV (www.openpiv.net) TXT files
 From a command line just use:
 
     nosetests
+    
+
+### How to help? ###
+
+Read the ToDo file and pick one item to program. Use Fork-Develop-Pull Request model to 
+contribute
+
+### How to write tutorials and add those to the documentation ###
+
+Using great tutorial http://sphinx-ipynb.readthedocs.org/en/latest/howto.html we now can 
+prepare IPython notebooks (see in /docs/source) and convert those to .rst files, then 
+
+    python setup.py build_sphinx
+    
+generates ```html``` directory with the documentation ready
