@@ -33,26 +33,28 @@ def genVelHist(vec):
     the velocity data. the velocity in the histpgram 
     contains all the data set such that CHC == 1
     """
-    u1,v1 = vec.U.flatten() , vec.V.flatten()
+    u1, v1 = vec.u.flatten(), vec.V.flatten()
     ax1 = plt.subplot2grid((2,1),(0,0))
     ax1.hist(u1,bins=np.sqrt(len(u1))*0.5,normed=1)
     ax1.set_xlabel('u [mm/sec]')
     ax2 = plt.subplot2grid((2,1),(1,0))
     ax2.hist(v1,bins=np.sqrt(len(v1)*0.5),normed=1)
-    ax2.set_xlabel('v [mm/sec]')
+    ax2.set_xlabel('v'+vec.velUnits)
     plt.tight_layout()
-    return
+    
     
 def genVorticityMap(vec):
-    dUy = gradient(vec.U)[0]*cos(vec.theta)-gradient(vec.U)[1]*sin(vec.theta)
-    dVx = gradient(vec.V)[1]*cos(vec.theta)+gradient(vec.V)[0]*sin(vec.theta)
-    dx = gradient(vec.X)[1]*cos(vec.theta)+gradient(vec.X)[0]*sin(vec.theta)
-    dy = gradient(vec.Y)[0]*cos(vec.theta)-gradient(vec.Y)[1]*sin(vec.theta)
+    """ why do we rotate the vector before taking derivative? """
+    # BUG:
+    dUy = gradient(vec.u)[0]*cos(vec.theta)-gradient(vec.u)[1]*sin(vec.theta)
+    dVx = gradient(vec.v)[1]*cos(vec.theta)+gradient(vec.v)[0]*sin(vec.theta)
+    dx = gradient(vec.x)[1]*cos(vec.theta)+gradient(vec.x)[0]*sin(vec.theta)
+    dy = gradient(vec.y)[0]*cos(vec.theta)-gradient(vec.y)[1]*sin(vec.theta)
     print amax(dUy),amax(dVx),amax(dx),amax(dy)
     vorticity = dVx/dy-dUy/dx
-    plt.contourf(vec.X,vec.Y,vorticity)
-    plt.xlabel('x ['+vec.length+']')
-    plt.ylabel('y ['+vec.length+']')
+    plt.contourf(vec.x,vec.y,vorticity)
+    plt.xlabel('x [' + vec.lUnits + ']')
+    plt.ylabel('y [' + vec.lUnits + ']')
     cbar = plt.colorbar()
     cbar.set_label(r'Vorticity [s$^{-1}$]')
-    return
+    

@@ -71,7 +71,19 @@ def vecToMatrix(data):
     X,Y = meshgrid(x,y)
     u1 = reshape(data[:,2],shape(X))
     v1 = reshape(data[:,3],shape(Y))*-1
-    chc = reshape(data[:,4],shape(X))  
+    chc = reshape(data[:,4],shape(X))
+    
     return (X,Y,u1,v1,chc)
 
+def vecToVec(data):
+    """ using vecToMatrix and get_data
+        generate directly the vec class object
+    """
     
+        
+def fit2LLK(vec):
+        """this function is specialy made for Ron's 
+        LLK PIV experiment"""
+        vec.rotate(-90)
+        return
+     
