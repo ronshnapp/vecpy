@@ -1,6 +1,7 @@
 doc/build
 build
 dist
+*.pyc
 vecPy.egg-info/dependency_links.txt
 vecPy.egg-info/PKG-INFO
 vecPy.egg-info/SOURCES.txt
