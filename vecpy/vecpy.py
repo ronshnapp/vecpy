@@ -4,7 +4,7 @@ Created on Sun May 24 22:02:49 2015
 
 @author: Ron
 """
-from numpy import sin, cos, pi, asarray
+from numpy import sin, cos, pi, asarray, array, shape, zeros
 from scipy.stats import norm
 from scipy.ndimage.filters import gaussian_filter
 from scipy.ndimage.filters import median_filter
@@ -80,6 +80,7 @@ class vec:
         """
         self.x = self.x + dx
         self.y = self.y + dy
+
         
     def crop(self,xmin,xmax,ymin,ymax):
         """
@@ -87,26 +88,36 @@ class vec:
         of the vector field difined as the region between 
         (xmin,ymin) and (xmax,ymax) 
         """
-        x = self.x[0,:]
-        y = self.y[:,0]
-        xx, yy = [], []
-        for i in range(len(x)):
-            if x[i]>xmin and x[i]<xmax:
-                xx.append(i)
-        for i in range(len(y)):
-            if y[i]>ymin and y[i]<ymax:
-                yy.append(i)
-        jl,jh,il,ih = min(xx),max(xx),min(yy),max(yy)
-        for i in [il,ih,jl,jh]: 
-            if i==-1: 
-                print 'error with limits the were given'
-                return
-        self.x = self.X[il:ih,jl:jh]
-        self.y = self.Y[il:ih,jl:jh]
-        self.u = self.U[il:ih,jl:jh]
-        self.v = self.V[il:ih,jl:jh]
-        self.chc = self.CHC[il:ih,jl:jh]
-        
+        temp = []
+        indexes = []
+        for i in range(len(self.x[:,0])):
+            temp.append([])
+            for j in range(len(self.x[0,:])):
+                if self.x[i,j]<xmax and self.x[i,j]>xmin:
+                    if self.y[i,j]<ymax and self.y[i,j]>ymin:
+                        temp[-1].append((i,j))
+        for i in temp:
+            if len(i)>0:
+                indexes.append(i)
+        if len(indexes)==0:
+            print 'not valid crop values'
+            return
+        indexes = array(indexes)
+        x, y = zeros(shape(indexes[:,:,0])), zeros(shape(indexes[:,:,0]))
+        u, v = zeros(shape(indexes[:,:,0])), zeros(shape(indexes[:,:,0]))
+        chc = zeros(shape(indexes[:,:,0]))
+        for i in range(len(indexes)):
+            for j in range(len(indexes[i])):
+                x[i,j] = self.x[indexes[i,j][0],indexes[i,j][1]]
+                y[i,j] = self.y[indexes[i,j][0],indexes[i,j][1]]
+                u[i,j] = self.u[indexes[i,j][0],indexes[i,j][1]]
+                v[i,j] = self.v[indexes[i,j][0],indexes[i,j][1]]
+                chc[i,j] = self.chc[indexes[i,j][0],indexes[i,j][1]]
+        self.x = x
+        self.y = y
+        self.u = u
+        self.v = v
+        self.chc = chc
         
     def getVelStat(self):
         """
@@ -141,4 +152,3 @@ class vec:
             self.u = gaussian_filter(self.u,1)
             self.v = gaussian_filter(self.v,1)
         else: print "Bad choise of filter! - try again"
-        
