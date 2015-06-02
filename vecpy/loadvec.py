@@ -75,15 +75,33 @@ def vecToMatrix(data):
     
     return (X,Y,u1,v1,chc)
 
-def vecToVec(data):
-    """ using vecToMatrix and get_data
-        generate directly the vec class object
+def vecToVec(fname,path,lUnits='m',tUnits='s'):
+    """ 
+    using vecToMatrix and get_data
+    generate directly the vec class object
     """
+    X,Y,U,V,CHC = vecToMatrix(get_data(fname,path))
+    dt = get_dt(fname,path)
+    vector = vec(X,Y,U,V,CHC,dt,lUnits=lUnits,tUnits=tUnits)
+    return vector
     
         
-def fit2LLK(vec):
-        """this function is specialy made for Ron's 
-        LLK PIV experiment"""
-        vec.rotate(-90)
-        return
+def getVecList(path, resolution=1, LUnits='mm',crop=False,rotate=False,Filter=True):
+    """
+    this function returns a list of vec instances
+    for each .vec file in directory 'path'
+    """
+    fnames = os.listdir(path)  
+    lst = []
+    for n in fnames:
+        if '.vec' in n:
+            X,Y,U,V,CHC = vecToMatrix(get_data(n,path))
+            dt = get_dt(n,path)
+            vector = vec(X,Y,U,V,CHC,dt,lUnits=LUnits)
+            vector.scale(resolution)
+            if Filter: vector.filterVelocity('med',5)
+            if rotate: vector.rotate(rotate)
+            if crop: vector.crop(crop[0],crop[1],crop[2],crop[3])
+            lst.append(vector)
+    return lst
      

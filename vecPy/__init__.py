@@ -11,6 +11,7 @@ from loadvec import *
 from vecpy import *
 from vecplot import *
 from numpy import *
+from animate import *
 import numpy as np
 import matplotlib.pylab as mpl
 import matplotlib.pyplot as plt

@@ -13,6 +13,12 @@ import numpy as np
 from numpy import *
 from matplotlib.pylab import *
 import matplotlib.pylab as mpl
+import numpy as np
+from matplotlib import pyplot as plt
+from matplotlib import animation
+from os import chdir, getcwd, listdir
+plt.rcParams['animation.ffmpeg_path'] = 'C:/ffmpeg/bin/ffmpeg.exe'
+
 
 def genQuiver(vec):
     """
@@ -23,6 +29,21 @@ def genQuiver(vec):
     cbar = mpl.colorbar()
     cbar.set_label(r'Velocity [m $\cdot$ s$^{-1}$]')
     mpl.quiver(vec.x,vec.y,vec.u,vec.v,units='width',scale=amax(sqrt(vec.u**2+vec.v**2))*25.0,headwidth=2 )
+    mpl.xlabel('x [' + vec.lUnits + ']')
+    mpl.ylabel('y [' + vec.lUnits + ']')
+    
+    
+def genFluctuationQuiver(vec):
+    """
+    generate a quiver plot of velocity fluctuation
+    i.e. velocity-mean_velocity.    
+    """
+    vec.getVelStat()
+    u,v = vec.u-vec.Umean,vec.v-vec.Vmean
+    mpl.contourf(vec.x,vec.y,sqrt(u**2+v**2),alpha=0.3)
+    cbar = mpl.colorbar()
+    cbar.set_label(r'Velocity [m $\cdot$ s$^{-1}$]')
+    mpl.quiver(vec.x, vec.y, u, v, units='width',scale=amax(sqrt(u**2+v**2))*25.0,headwidth=2 )
     mpl.xlabel('x [' + vec.lUnits + ']')
     mpl.ylabel('y [' + vec.lUnits + ']')
     
@@ -57,4 +78,34 @@ def genVorticityMap(vec):
     plt.ylabel('y [' + vec.lUnits + ']')
     cbar = plt.colorbar()
     cbar.set_label(r'Vorticity [s$^{-1}$]')
+
+
+def animateVecList(vecList, arrowscale=1, savepath=None):
     
+    X, Y = vecList[0].x, vecList[0].y
+    U, V = vecList[0].u, vecList[0].v
+    fig, ax = plt.subplots(1,1)
+    #Q = ax.quiver(X, Y, U, V, units='inches', scale=arrowscale)
+    M = sqrt(pow(U, 2) + pow(V, 2))    
+    Q = ax.quiver(X[::3,::3], Y[::3,::3], 
+                  U[::3,::3], V[::3,::3], M[::3,::3],
+                 units='inches', scale=arrowscale)
+    cb = plt.colorbar(Q)
+    cb.ax.set_ylabel('velocity ['+vecList[0].lUnits+'/'+vecList[0].tUnits+']')
+    text = ax.text(0.2,1.05, '1/'+str(len(vecList)), ha='center', va='center', transform=ax.transAxes)
+    def update_quiver(num,Q,vecList,text):
+        U,V = vecList[num].u[::3,::3],vecList[num].v[::3,::3]
+        M = sqrt(pow(U, 2) + pow(V, 2))   
+        Q.set_UVC(U,V,M)
+        #Q.set_UVC(vecList[num].u,vecList[num].v)
+        text.set_text(str(num+1)+'/'+str(len(vecList)))
+        return Q,
+    anim = animation.FuncAnimation(fig, update_quiver, fargs=(Q,vecList,text),
+                               frames = len(vecList), blit=False)
+    mywriter = animation.FFMpegWriter()
+    if savepath:
+        p = getcwd()
+        chdir(savepath)
+        anim.save('im.mp4', writer=mywriter)
+        chdir(p)
+    else: anim.save('im.mp4', writer=mywriter)  
