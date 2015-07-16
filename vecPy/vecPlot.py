@@ -31,7 +31,7 @@ def genQuiver(vec):
                  cmap=plt.cm.get_cmap("Blues"), 
                  levels=levels)
     cbar = mpl.colorbar()
-    cbar.set_label(r'Velocity [m $\cdot$ s$^{-1}$]')
+    cbar.set_label(r'Velocity ['+vec.lUnits+' $\cdot$ '+vec.tUnits+'$^{-1}$]')
     mpl.quiver(vec.x,vec.y,vec.u,vec.v,units='width',scale=amax(sqrt(vec.u**2+vec.v**2))*25.0,headwidth=2 )
     mpl.xlabel('x [' + vec.lUnits + ']')
     mpl.ylabel('y [' + vec.lUnits + ']')
