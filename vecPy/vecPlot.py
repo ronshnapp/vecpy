@@ -25,7 +25,11 @@ def genQuiver(vec):
     this function will generate a quiver plot from a vec 
     object    
     """
-    mpl.contourf(vec.x,vec.y,sqrt(vec.u**2+vec.v**2),alpha=0.3)
+    S = sqrt(vec.u**2+vec.v**2)
+    levels = np.linspace(0, amax(S), 30)
+    mpl.contourf(vec.x,vec.y,S,alpha=0.5,
+                 cmap=plt.cm.get_cmap("Blues"), 
+                 levels=levels)
     cbar = mpl.colorbar()
     cbar.set_label(r'Velocity [m $\cdot$ s$^{-1}$]')
     mpl.quiver(vec.x,vec.y,vec.u,vec.v,units='width',scale=amax(sqrt(vec.u**2+vec.v**2))*25.0,headwidth=2 )
@@ -40,7 +44,11 @@ def genFluctuationQuiver(vec):
     """
     vec.getVelStat()
     u,v = vec.u-vec.Umean,vec.v-vec.Vmean
-    mpl.contourf(vec.x,vec.y,sqrt(u**2+v**2),alpha=0.3)
+    S = sqrt(u**2+v**2)
+    levels = np.linspace(0, amax(S), 30)
+    mpl.contourf(vec.x,vec.y,S,alpha=0.5,
+                 cmap=plt.cm.get_cmap("Greens"),
+                 levels=levels)
     cbar = mpl.colorbar()
     cbar.set_label(r'Velocity [m $\cdot$ s$^{-1}$]')
     mpl.quiver(vec.x, vec.y, u, v, units='width',scale=amax(sqrt(u**2+v**2))*25.0,headwidth=2 )
@@ -51,8 +59,7 @@ def genFluctuationQuiver(vec):
 def genVelHist(vec):
     """
     this function will plot a normalized histogram of
-    the velocity data. the velocity in the histpgram 
-    contains all the data set such that CHC == 1
+    the velocity data.
     """
     u1, v1 = vec.u.flatten(), vec.v.flatten()
     ax1 = plt.subplot2grid((2,1),(0,0))
@@ -71,15 +78,32 @@ def genVorticityMap(vec):
     dVx = gradient(vec.v)[1]*cos(vec.theta)+gradient(vec.v)[0]*sin(vec.theta)
     dx = gradient(vec.x)[1]*cos(vec.theta)+gradient(vec.x)[0]*sin(vec.theta)
     dy = gradient(vec.y)[0]*cos(vec.theta)-gradient(vec.y)[1]*sin(vec.theta)
-    print amax(dUy),amax(dVx),amax(dx),amax(dy)
     vorticity = dVx/dy-dUy/dx
-    plt.contourf(vec.x,vec.y,vorticity)
+    m = amax(absolute(vorticity))
+    levels = np.linspace(-m, m, 30)
+    plt.contourf(vec.x,vec.y,vorticity, levels=levels,
+                 cmap = plt.cm.get_cmap('RdYlBu'))
     plt.xlabel('x [' + vec.lUnits + ']')
     plt.ylabel('y [' + vec.lUnits + ']')
     cbar = plt.colorbar()
     cbar.set_label(r'Vorticity [s$^{-1}$]')
 
 
+def genShearMap(vec):
+    """this function plots a map of the xy strain e_xy"""
+    dUy = gradient(vec.u)[0]*cos(vec.theta)-gradient(vec.u)[1]*sin(vec.theta)
+    dVx = gradient(vec.v)[1]*cos(vec.theta)+gradient(vec.v)[0]*sin(vec.theta)
+    dx = gradient(vec.x)[1]*cos(vec.theta)+gradient(vec.x)[0]*sin(vec.theta)
+    dy = gradient(vec.y)[0]*cos(vec.theta)-gradient(vec.y)[1]*sin(vec.theta)
+    strain = dVx/dy+dUy/dx
+    m = amax(absolute(strain))
+    levels = np.linspace(-m, m, 30)
+    plt.contourf(vec.x,vec.y,strain, levels=levels,
+                 cmap = plt.cm.get_cmap('PRGn'))
+    plt.xlabel('x [' + vec.lUnits + ']')
+    plt.ylabel('y [' + vec.lUnits + ']')
+    cbar = plt.colorbar()
+    cbar.set_label(r'strain [s$^{-1}$]')
 def animateVecList(vecList, arrowscale=1, savepath=None):
     
     X, Y = vecList[0].x, vecList[0].y
