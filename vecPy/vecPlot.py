@@ -104,8 +104,34 @@ def genShearMap(vec):
     plt.ylabel('y [' + vec.lUnits + ']')
     cbar = plt.colorbar()
     cbar.set_label(r'strain [s$^{-1}$]')
-def animateVecList(vecList, arrowscale=1, savepath=None):
     
+
+def genFlowAcceleration(vec):
+    """this function will plot a contour plot of
+    the convective term of material derivative.
+    i.e. it plots the magnitude of the vector 
+    (u*dudx + v*dudy , u*dvdx + v*dvdy)"""  
+    dUx = gradient(vec.u)[1]*cos(vec.theta)+gradient(vec.u)[0]*sin(vec.theta)
+    dUy = gradient(vec.u)[0]*cos(vec.theta)-gradient(vec.u)[1]*sin(vec.theta)
+    dVx = gradient(vec.v)[1]*cos(vec.theta)+gradient(vec.v)[0]*sin(vec.theta)
+    dVy = gradient(vec.v)[0]*cos(vec.theta)-gradient(vec.v)[1]*sin(vec.theta)
+    dx = gradient(vec.x)[1]*cos(vec.theta)+gradient(vec.x)[0]*sin(vec.theta)
+    dy = gradient(vec.y)[0]*cos(vec.theta)-gradient(vec.y)[1]*sin(vec.theta)
+    ax = vec.u*dUx/dx + vec.v*dUy/dy
+    ay = vec.u*dVx/dx + vec.v*dVy/dy
+    S = sqrt(ax**2+ay**2)
+    levels = np.linspace(0, amax(S), 30)
+    mpl.contourf(vec.x,vec.y,S,alpha=0.5,
+                 cmap=plt.cm.get_cmap("OrRd"), 
+                 levels=levels)
+    cbar = mpl.colorbar()
+    cbar.set_label(r'Spatial Material Derivative ['+vec.lUnits+' $\cdot$ '+vec.tUnits+'$^{-2}$]')
+    mpl.quiver(vec.x,vec.y,ax,ay,units='width',scale=amax(sqrt(vec.u**2+vec.v**2))*25.0,headwidth=2 )
+    mpl.xlabel('x [' + vec.lUnits + ']')
+    mpl.ylabel('y [' + vec.lUnits + ']')
+    
+    
+def animateVecList(vecList, arrowscale=1, savepath=None):
     X, Y = vecList[0].x, vecList[0].y
     U, V = vecList[0].u, vecList[0].v
     fig, ax = plt.subplots(1,1)
