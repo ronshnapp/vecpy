@@ -110,7 +110,7 @@ def readTimeStamp(fname,path):
     an array of the times at which photos were
     taken at relative to the begining of
     aquasition"""
-    os.chdir(path)
+    fname = os.path.join(os.path.abspath(path),fname)
     num_lines = sum(1 for line in open(fname))
     f = open(fname)
     for i in range(3):
