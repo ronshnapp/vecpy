@@ -105,16 +105,3 @@ def getVecList(path, resolution=1, LUnits='mm',crop=False,rotate=False,Filter=Tr
             lst.append(vector)
     return lst
      
-def readTimeStamp(fname,path):
-    """reads an insight tstmp file and returns
-    an array of the times at which photos were
-    taken at relative to the begining of
-    aquasition"""
-    fname = os.path.join(os.path.abspath(path),fname)
-    num_lines = sum(1 for line in open(fname))
-    f = open(fname)
-    for i in range(3):
-        f.readline()
-    strt = [f.readline().split()[1] for i in range(num_lines-4)]
-    t = [float(i)/1000000 for i in strt]
-    return t
