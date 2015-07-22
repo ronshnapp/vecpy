@@ -20,11 +20,13 @@ from os import chdir, getcwd, listdir
 plt.rcParams['animation.ffmpeg_path'] = 'C:/ffmpeg/bin/ffmpeg.exe'
 from scipy.ndimage.filters import median_filter
 
-def genQuiver(vec, threshold = None):
+def genQuiver(vec, arrScale = 25.0, threshold = None, nthArr = 1):
     """
     this function will generate a quiver plot from a vec 
     object   
     threshold - values above the threshold will be set equal to threshold
+    arrScale - use to change arrow scales
+    nthArr - use to plot only every nth arrow from the array 
     """
     u = vec.u
     v = vec.v
@@ -39,7 +41,10 @@ def genQuiver(vec, threshold = None):
                  levels=levels)
     cbar = mpl.colorbar()
     cbar.set_label(r'Velocity ['+vec.lUnits+' $\cdot$ '+vec.tUnits+'$^{-1}$]')
-    mpl.quiver(vec.x,vec.y,u,v,units='width',scale=amax(S*50.0),headwidth=2 )
+    n = nthArr
+    mpl.quiver(vec.x[1::n,1::n],vec.y[1::n,1::n],
+               u[1::n,1::n],v[1::n,1::n],units='width',
+               scale=amax(S*arrScale),headwidth=2 )
     mpl.xlabel('x [' + vec.lUnits + ']')
     mpl.ylabel('y [' + vec.lUnits + ']')
     
@@ -78,7 +83,7 @@ def genVelHist(vec):
     plt.tight_layout()
     
     
-def genVorticityMap(vec):
+def genVorticityMap(vec, threshold = None):
     """ why do we rotate the vector before taking derivative? """
     # BUG:
     dUy = gradient(vec.u)[0]*cos(vec.theta)-gradient(vec.u)[1]*sin(vec.theta)
@@ -86,6 +91,8 @@ def genVorticityMap(vec):
     dx = gradient(vec.x)[1]*cos(vec.theta)+gradient(vec.x)[0]*sin(vec.theta)
     dy = gradient(vec.y)[0]*cos(vec.theta)-gradient(vec.y)[1]*sin(vec.theta)
     vorticity = dVx/dy-dUy/dx
+    if threshold != None:
+        vorticity = thresholdArray(vorticity,threshold)
     m = amax(absolute(vorticity))
     levels = np.linspace(-m, m, 30)
     plt.contourf(vec.x,vec.y,vorticity, levels=levels,
@@ -96,13 +103,15 @@ def genVorticityMap(vec):
     cbar.set_label(r'Vorticity [s$^{-1}$]')
 
 
-def genShearMap(vec):
+def genShearMap(vec, threshold = None):
     """this function plots a map of the xy strain e_xy"""
     dUy = gradient(vec.u)[0]*cos(vec.theta)-gradient(vec.u)[1]*sin(vec.theta)
     dVx = gradient(vec.v)[1]*cos(vec.theta)+gradient(vec.v)[0]*sin(vec.theta)
     dx = gradient(vec.x)[1]*cos(vec.theta)+gradient(vec.x)[0]*sin(vec.theta)
     dy = gradient(vec.y)[0]*cos(vec.theta)-gradient(vec.y)[1]*sin(vec.theta)
     strain = dVx/dy+dUy/dx
+    if threshold != None:
+        strain = thresholdArray(strain,threshold)
     m = amax(absolute(strain))
     levels = np.linspace(-m, m, 30)
     plt.contourf(vec.x,vec.y,strain, levels=levels,
@@ -113,7 +122,7 @@ def genShearMap(vec):
     cbar.set_label(r'strain [s$^{-1}$]')
     
 
-def genFlowAcceleration(vec, threshold = None):
+def genFlowAcceleration(vec, arrScale = 25.0, threshold = None, nthArr = 1):
     """this function will plot a contour plot of
     the convective term of material derivative.
     i.e. it plots the magnitude of the vector 
@@ -136,7 +145,10 @@ def genFlowAcceleration(vec, threshold = None):
                  levels=levels)
     cbar = mpl.colorbar()
     cbar.set_label(r'Spatial Material Derivative ['+vec.lUnits+' $\cdot$ '+vec.tUnits+'$^{-2}$]')
-    mpl.quiver(vec.x,vec.y,ax,ay,units='width',scale=amax(S)*50.0,headwidth=2 )
+    n = nthArr
+    mpl.quiver(vec.x[1::n,1::n],vec.y[1::n,1::n],
+               ax[1::n,1::n],ay[1::n,1::n],units='width',
+               scale=amax(S)*arrScale,headwidth=2 )
     mpl.xlabel('x [' + vec.lUnits + ']')
     mpl.ylabel('y [' + vec.lUnits + ']')
     
@@ -173,6 +185,6 @@ def animateVecList(vecList, arrowscale=1, savepath=None):
 def thresholdArray(array, th):
     index = where(absolute(array)>th)
     for i in range(len(index[0])):
-        array[index[0][i],index[1][i]] = th
+        array[index[0][i],index[1][i]] = th*sign(array[index[0][i],index[1][i]])
     return array
     
