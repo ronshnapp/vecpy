@@ -20,13 +20,14 @@ from os import chdir, getcwd, listdir
 plt.rcParams['animation.ffmpeg_path'] = 'C:/ffmpeg/bin/ffmpeg.exe'
 from scipy.ndimage.filters import median_filter
 
-def genQuiver(vec, arrScale = 25.0, threshold = None, nthArr = 1):
+def genQuiver(vec, arrScale = 25.0, threshold = None, nthArr = 1, contourLevels = None):
     """
     this function will generate a quiver plot from a vec 
     object   
     threshold - values above the threshold will be set equal to threshold
     arrScale - use to change arrow scales
     nthArr - use to plot only every nth arrow from the array 
+    contourLevels - use to specify the maximum value (abs) of contour plots 
     """
     u = vec.u
     v = vec.v
@@ -35,7 +36,10 @@ def genQuiver(vec, arrScale = 25.0, threshold = None, nthArr = 1):
         v = thresholdArray(v, threshold)
         print 1
     S = sqrt(u**2+v**2)
-    levels = np.linspace(0, amax(S), 30)
+    if contourLevels == None:
+        levels = np.linspace(0, amax(S), 30)
+    else:
+        levels = np.linspace(0, contourLevels, 30)
     mpl.contourf(vec.x,vec.y,S,alpha=0.8,
                  cmap=plt.cm.get_cmap("Blues"), 
                  levels=levels)
@@ -83,7 +87,7 @@ def genVelHist(vec):
     plt.tight_layout()
     
     
-def genVorticityMap(vec, threshold = None):
+def genVorticityMap(vec, threshold = None, contourLevels = None):
     """ why do we rotate the vector before taking derivative? """
     # BUG:
     dUy = gradient(vec.u)[0]*cos(vec.theta)-gradient(vec.u)[1]*sin(vec.theta)
@@ -94,7 +98,10 @@ def genVorticityMap(vec, threshold = None):
     if threshold != None:
         vorticity = thresholdArray(vorticity,threshold)
     m = amax(absolute(vorticity))
-    levels = np.linspace(-m, m, 30)
+    if contourLevels == None:
+        levels = np.linspace(-m, m, 30)
+    else:
+        levels = np.linspace(-contourLevels, contourLevels, 30)
     plt.contourf(vec.x,vec.y,vorticity, levels=levels,
                  cmap = plt.cm.get_cmap('RdYlBu'))
     plt.xlabel('x [' + vec.lUnits + ']')
@@ -103,7 +110,7 @@ def genVorticityMap(vec, threshold = None):
     cbar.set_label(r'Vorticity [s$^{-1}$]')
 
 
-def genShearMap(vec, threshold = None):
+def genShearMap(vec, threshold = None, contourLevels = None):
     """this function plots a map of the xy strain e_xy"""
     dUy = gradient(vec.u)[0]*cos(vec.theta)-gradient(vec.u)[1]*sin(vec.theta)
     dVx = gradient(vec.v)[1]*cos(vec.theta)+gradient(vec.v)[0]*sin(vec.theta)
@@ -113,7 +120,10 @@ def genShearMap(vec, threshold = None):
     if threshold != None:
         strain = thresholdArray(strain,threshold)
     m = amax(absolute(strain))
-    levels = np.linspace(-m, m, 30)
+    if contourLevels == None:
+        levels = np.linspace(-m, m, 30)
+    else:
+        levels = np.linspace(-contourLevels, contourLevels, 30)
     plt.contourf(vec.x,vec.y,strain, levels=levels,
                  cmap = plt.cm.get_cmap('PRGn'))
     plt.xlabel('x [' + vec.lUnits + ']')
@@ -122,7 +132,7 @@ def genShearMap(vec, threshold = None):
     cbar.set_label(r'strain [s$^{-1}$]')
     
 
-def genFlowAcceleration(vec, arrScale = 25.0, threshold = None, nthArr = 1):
+def genFlowAcceleration(vec, arrScale = 25.0, threshold = None, nthArr = 1, contourLevels = None):
     """this function will plot a contour plot of
     the convective term of material derivative.
     i.e. it plots the magnitude of the vector 
@@ -139,7 +149,10 @@ def genFlowAcceleration(vec, arrScale = 25.0, threshold = None, nthArr = 1):
         ax = thresholdArray(ax,threshold)
         ay = thresholdArray(ay,threshold)
     S = sqrt(ax**2+ay**2)
-    levels = np.linspace(0, amax(S), 30)
+    if contourLevels == None:
+        levels = np.linspace(0, amax(S), 30)
+    else:
+        levels = np.linspace(0, contourLevels, 30)
     mpl.contourf(vec.x,vec.y,S,alpha=0.5,
                  cmap=plt.cm.get_cmap("OrRd"), 
                  levels=levels)
