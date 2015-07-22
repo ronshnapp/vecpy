@@ -18,21 +18,28 @@ from matplotlib import pyplot as plt
 from matplotlib import animation
 from os import chdir, getcwd, listdir
 plt.rcParams['animation.ffmpeg_path'] = 'C:/ffmpeg/bin/ffmpeg.exe'
+from scipy.ndimage.filters import median_filter
 
-
-def genQuiver(vec):
+def genQuiver(vec, threshold = None):
     """
     this function will generate a quiver plot from a vec 
-    object    
+    object   
+    threshold - values above the threshold will be set equal to threshold
     """
-    S = sqrt(vec.u**2+vec.v**2)
+    u = vec.u
+    v = vec.v
+    if threshold != None:
+        u = thresholdArray(u, threshold)
+        v = thresholdArray(v, threshold)
+        print 1
+    S = sqrt(u**2+v**2)
     levels = np.linspace(0, amax(S), 30)
-    mpl.contourf(vec.x,vec.y,S,alpha=0.5,
+    mpl.contourf(vec.x,vec.y,S,alpha=0.8,
                  cmap=plt.cm.get_cmap("Blues"), 
                  levels=levels)
     cbar = mpl.colorbar()
     cbar.set_label(r'Velocity ['+vec.lUnits+' $\cdot$ '+vec.tUnits+'$^{-1}$]')
-    mpl.quiver(vec.x,vec.y,vec.u,vec.v,units='width',scale=amax(sqrt(vec.u**2+vec.v**2))*25.0,headwidth=2 )
+    mpl.quiver(vec.x,vec.y,u,v,units='width',scale=amax(S*50.0),headwidth=2 )
     mpl.xlabel('x [' + vec.lUnits + ']')
     mpl.ylabel('y [' + vec.lUnits + ']')
     
@@ -106,7 +113,7 @@ def genShearMap(vec):
     cbar.set_label(r'strain [s$^{-1}$]')
     
 
-def genFlowAcceleration(vec):
+def genFlowAcceleration(vec, threshold = None):
     """this function will plot a contour plot of
     the convective term of material derivative.
     i.e. it plots the magnitude of the vector 
@@ -117,8 +124,11 @@ def genFlowAcceleration(vec):
     dVy = gradient(vec.v)[0]*cos(vec.theta)-gradient(vec.v)[1]*sin(vec.theta)
     dx = gradient(vec.x)[1]*cos(vec.theta)+gradient(vec.x)[0]*sin(vec.theta)
     dy = gradient(vec.y)[0]*cos(vec.theta)-gradient(vec.y)[1]*sin(vec.theta)
-    ax = vec.u*dUx/dx + vec.v*dUy/dy
-    ay = vec.u*dVx/dx + vec.v*dVy/dy
+    ax = median_filter(vec.u*dUx/dx + vec.v*dUy/dy , (3,3))
+    ay = median_filter(vec.u*dVx/dx + vec.v*dVy/dy , (3,3))
+    if threshold != None:
+        ax = thresholdArray(ax,threshold)
+        ay = thresholdArray(ay,threshold)
     S = sqrt(ax**2+ay**2)
     levels = np.linspace(0, amax(S), 30)
     mpl.contourf(vec.x,vec.y,S,alpha=0.5,
@@ -126,7 +136,7 @@ def genFlowAcceleration(vec):
                  levels=levels)
     cbar = mpl.colorbar()
     cbar.set_label(r'Spatial Material Derivative ['+vec.lUnits+' $\cdot$ '+vec.tUnits+'$^{-2}$]')
-    mpl.quiver(vec.x,vec.y,ax,ay,units='width',scale=amax(sqrt(vec.u**2+vec.v**2))*25.0,headwidth=2 )
+    mpl.quiver(vec.x,vec.y,ax,ay,units='width',scale=amax(S)*50.0,headwidth=2 )
     mpl.xlabel('x [' + vec.lUnits + ']')
     mpl.ylabel('y [' + vec.lUnits + ']')
     
@@ -159,3 +169,10 @@ def animateVecList(vecList, arrowscale=1, savepath=None):
         anim.save('im.mp4', writer=mywriter)
         chdir(p)
     else: anim.save('im.mp4', writer=mywriter)  
+    
+def thresholdArray(array, th):
+    index = where(absolute(array)>th)
+    for i in range(len(index[0])):
+        array[index[0][i],index[1][i]] = th
+    return array
+    

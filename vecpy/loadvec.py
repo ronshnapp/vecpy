@@ -116,5 +116,6 @@ def readTimeStamp(fname,path):
     for i in range(3):
         f.readline()
     strt = [f.readline().split()[1] for i in range(num_lines-4)]
+    print strt[0:3]
     t = [float(i)/1000000 for i in strt]
     return t
