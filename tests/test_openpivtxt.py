@@ -1,17 +1,17 @@
 #!/usr/bin/python
 
-from vecpy import loadvec
-from vecpy import vecplot
-from vecpy.vecpy import vec
+from vecPy import loadVec
+from vecPy import vecPlot
+from vecPy.vecPy import vec
 import matplotlib.pyplot as plt
 
 
 test_dir = "tests/data"
-lst = loadvec.read_directory(test_dir)
-data = loadvec.get_data_openpiv(lst[0],test_dir)
+lst = loadVec.read_directory(test_dir,ext='txt')
+data = loadVec.get_data_openpiv(lst[0],test_dir)
 # dt = loadvec.get_dt(lst[0],test_dir)
 dt = 1.0 # there is no dt in OpenPIV files
-x,y,u,v,chc = loadvec.vecToMatrix(data)
+x,y,u,v,chc = loadVec.vecToMatrix(data)
 vec = vec(x,y,u,v,chc,dt,lUnits='pix',tUnits = 'dt')
 
 
@@ -20,10 +20,10 @@ resolution = 1.0/71.96 #[mm/px]
 vec.scale(resolution)
 
 plt.figure()
-vecplot.genQuiver(vec)
+vecPlot.genQuiver(vec)
 plt.show()
 
 plt.figure()
-vecplot.genVorticityMap(vec)
+vecPlot.genVorticityMap(vec)
 plt.show()
 
