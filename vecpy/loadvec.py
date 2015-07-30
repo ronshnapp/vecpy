@@ -49,7 +49,8 @@ def get_data_openpiv(fname,path):
     return data
 	
 def read_directory(dirname):
-    list_files = os.listdir(dirname)
+    # list_files = os.listdir(dirname)
+    list_files = [s for s in os.listdir(dirname) if s.rpartition('.')[2] in ('vec','VEC')]
     return list_files
 	
 def patternize(lst):
