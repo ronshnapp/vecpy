@@ -22,24 +22,31 @@ from scipy.ndimage.filters import median_filter
 
 def genQuiver(vec, arrScale = 25.0, threshold = None, nthArr = 1, contourLevels = None):
     """
-    this function will generate a quiver plot from a vec 
-    object   
-    threshold - values above the threshold will be set equal to threshold
-    arrScale - use to change arrow scales
-    nthArr - use to plot only every nth arrow from the array 
-    contourLevels - use to specify the maximum value (abs) of contour plots 
+    Generates a quiver plot of a 'vec' object
+    Inputs:   
+        threshold - values above the threshold will be set equal to threshold
+        arrScale - use to change arrow scales
+        nthArr - use to plot only every nth arrow from the array 
+        contourLevels - use to specify the maximum value (abs) of contour plots 
+    Outputs:
+        none
+    Usage:
+        vecplot.genQuiver(vec, arrScale = 0.2, threshold = Inf, n)
     """
     u = vec.u
     v = vec.v
-    if threshold != None:
+    
+    if threshold is not None:
         u = thresholdArray(u, threshold)
         v = thresholdArray(v, threshold)
-        print 1
-    S = sqrt(u**2+v**2)
-    if contourLevels == None:
-        levels = np.linspace(0, amax(S), 30)
+        
+    S = sqrt(u**2 + v**2)
+    
+    if contourLevels is None:
+        levels = np.linspace(0, amax(S), 30) # default contour levels up to max of S
     else:
         levels = np.linspace(0, contourLevels, 30)
+        
     mpl.contourf(vec.x,vec.y,S,alpha=0.8,
                  cmap=plt.cm.get_cmap("Blues"), 
                  levels=levels)
