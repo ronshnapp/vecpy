@@ -1,16 +1,16 @@
 #!/usr/bin/python
 
-from vecpy import loadvec
-from vecpy import vecplot
-from vecpy.vecpy import vec
+from vecPy import loadVec
+from vecPy import vecPlot
+from vecPy.vecPy import vec
 import matplotlib.pyplot as plt
 
 
 test_dir = "tests/data"
-lst = loadvec.read_directory(test_dir)
-data = loadvec.get_data(lst[3],test_dir)
-dt = loadvec.get_dt(lst[3],test_dir)
-x,y,u,v,chc = loadvec.vecToMatrix(data)
+lst = loadVec.read_directory(test_dir)
+data = loadVec.get_data(lst[3],test_dir)
+dt = loadVec.get_dt(lst[3],test_dir)
+x,y,u,v,chc = loadVec.vecToMatrix(data)
 vec = vec(x,y,u,v,chc,dt,lUnits='mm',tUnits = 's')
 
 
@@ -19,10 +19,10 @@ vec.rotate(-90)
 vec.scale(resolution)
 
 plt.figure()
-vecplot.genQuiver(vec)
+vecPlot.genQuiver(vec)
 plt.show()
 
 plt.figure()
-vecplot.genVorticityMap(vec)
+vecPlot.genVorticityMap(vec)
 plt.show()
 

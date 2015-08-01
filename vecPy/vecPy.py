@@ -152,3 +152,24 @@ class vec:
             self.u = gaussian_filter(self.u,1)
             self.v = gaussian_filter(self.v,1)
         else: print "Bad choise of filter! - try again"
+        
+class vecList(list):
+    def __init__(self):
+        """ creates a list of vector maps"""
+    
+    
+    def average(self):
+        """ ensemble average, returns a vector map """
+        if not self:
+            raise("empty list")
+        
+        av = self[0]
+
+        for d in self[1:]:
+            av.u += d.u
+            av.v += d.v
+    
+        av.u /= len(self)
+        av.v /= len(self)
+
+        return av

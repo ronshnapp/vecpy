@@ -10,7 +10,7 @@ def read(fname):
 
 setup(
     name = "vecPy",
-    version = "0.0.0.1",
+    version = "0.0.0.2",
     author = "Ron Shnapp",
     author_email = "ron@shnapp.com",
     description = ("Post processing of PIV vector files "
@@ -18,7 +18,7 @@ setup(
     license = "BSD",
     keywords = "example documentation tutorial",
     url = "http://packages.python.org/vecPy",
-    packages=['vecpy', 'tests'],
+    packages=['vecPy', 'tests'],
     long_description=read('README.md'),
     classifiers=[
         "Development Status :: 3 - Alpha",

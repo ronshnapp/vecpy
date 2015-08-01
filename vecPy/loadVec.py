@@ -11,7 +11,8 @@ import numpy as np
 from numpy import *
 import matplotlib.pylab as mpl
 import matplotlib.pyplot as plt
-from vecpy import vec
+from vecPy import vec
+from string import upper, lower
 
 def get_dt(fname,path):
     """given a .vec file this will return the delta t 
@@ -48,8 +49,9 @@ def get_data_openpiv(fname,path):
     
     return data
 	
-def read_directory(dirname):
-    list_files = os.listdir(dirname)
+def read_directory(dirname, ext='vec'):
+    # list_files = os.listdir(dirname)
+    list_files = [s for s in os.listdir(dirname) if s.rpartition('.')[2] in (lower(ext),upper(ext))]
     return list_files
 	
 def patternize(lst):
