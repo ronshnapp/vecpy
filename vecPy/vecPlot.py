@@ -51,7 +51,7 @@ def genQuiver(vec, arrScale = 25.0, threshold = None, nthArr = 1, contourLevels 
                  cmap=plt.cm.get_cmap("Blues"), 
                  levels=levels)
     cbar = mpl.colorbar()
-    cbar.set_label(r'Velocity ['+vec.lUnits+' $\cdot$ '+vec.tUnits+'$^{-1}$]')
+    cbar.set_label(r'$\left| \, V \, \right|$ ['+vec.lUnits+' $\cdot$ '+vec.tUnits+'$^{-1}$]')
     n = nthArr
     mpl.quiver(vec.x[1::n,1::n],vec.y[1::n,1::n],
                u[1::n,1::n],v[1::n,1::n],units='width',
@@ -114,7 +114,7 @@ def genVorticityMap(vec, threshold = None, contourLevels = None):
     plt.xlabel('x [' + vec.lUnits + ']')
     plt.ylabel('y [' + vec.lUnits + ']')
     cbar = plt.colorbar()
-    cbar.set_label(r'Vorticity [s$^{-1}$]')
+    cbar.set_label(r'$\omega$ [s$^{-1}$]')
 
 
 def genShearMap(vec, threshold = None, contourLevels = None):
@@ -136,7 +136,7 @@ def genShearMap(vec, threshold = None, contourLevels = None):
     plt.xlabel('x [' + vec.lUnits + ']')
     plt.ylabel('y [' + vec.lUnits + ']')
     cbar = plt.colorbar()
-    cbar.set_label(r'strain [s$^{-1}$]')
+    cbar.set_label(r'$\epsilon_t$ [s$^{-1}$]')
     
 
 def genFlowAcceleration(vec, arrScale = 25.0, threshold = None, nthArr = 1, contourLevels = None):
@@ -164,7 +164,8 @@ def genFlowAcceleration(vec, arrScale = 25.0, threshold = None, nthArr = 1, cont
                  cmap=plt.cm.get_cmap("OrRd"), 
                  levels=levels)
     cbar = mpl.colorbar()
-    cbar.set_label(r'Spatial Material Derivative ['+vec.lUnits+' $\cdot$ '+vec.tUnits+'$^{-2}$]')
+    cbar.set_label(r'$\left| \, \left( V\cdot \nabla \right) \cdot V \, \right|$ ['+
+                   vec.lUnits+' $\cdot$ '+vec.tUnits+'$^{-2}$]')
     n = nthArr
     mpl.quiver(vec.x[1::n,1::n],vec.y[1::n,1::n],
                ax[1::n,1::n],ay[1::n,1::n],units='width',
