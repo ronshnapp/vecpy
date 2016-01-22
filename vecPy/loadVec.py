@@ -7,10 +7,11 @@ extended by Ron Shnapp 24.5.15
 
 """
 import os
-import numpy as np
-from numpy import *
-import matplotlib.pylab as mpl
-import matplotlib.pyplot as plt
+#import numpy as np
+#from numpy import *
+from numpy import genfromtxt, meshgrid, shape, reshape
+#import matplotlib.pylab as mpl
+#import matplotlib.pyplot as plt
 from vecPy import vec
 from string import upper, lower
 
@@ -32,7 +33,7 @@ def get_data(fname,path):
     a single .vec file"""
     fname = os.path.join(os.path.abspath(path),fname) # just make a full path name 
     if fname.lower().endswith('.vec'):
-        data = np.genfromtxt(fname,skip_header=1,delimiter=',',usecols=(0,1,2,3,4))
+        data = genfromtxt(fname,skip_header=1,delimiter=',',usecols=(0,1,2,3,4))
     else:
         raise 'Wrong file extension'
         
@@ -43,7 +44,7 @@ def get_data_openpiv(fname,path):
     a single .txt file"""
     fname = os.path.join(os.path.abspath(path),fname)
     if fname.endswith('.txt'): 
-        data = np.genfromtxt(fname,usecols=(0,1,2,3,4))
+        data = genfromtxt(fname,usecols=(0,1,2,3,4))
     else:
         raise 'Wrong file extension'
     
@@ -64,7 +65,8 @@ def patternize(lst):
     return n
     
 def vecToMatrix(data):
-    """this function takes vector form data and shifts it in
+    """ helper finction for vecToVec.
+    this function takes vector form data and shifts it in
     to a matrix form. return is 4 matrices:
     X,Y - x and y axis position matrices in meshgrid form
     U,V - velocity of the flow"""
@@ -79,8 +81,7 @@ def vecToMatrix(data):
 
 def vecToVec(fname,path,lUnits='m',tUnits='s'):
     """ 
-    using vecToMatrix and get_data
-    generate directly the vec class object
+    generate directly the vec class object from a vec file
     """
     X,Y,U,V,CHC = vecToMatrix(get_data(fname,path))
     dt = get_dt(fname,path)
@@ -92,6 +93,8 @@ def getVecList(path, resolution=1, LUnits='mm',crop=False,rotate=False,Filter=Tr
     """
     this function returns a list of vec instances
     for each .vec file in directory 'path'
+    
+    use this if you want to analize a bunch of vec files
     """
     fnames = os.listdir(path)  
     lst = []
@@ -118,6 +121,5 @@ def readTimeStamp(fname,path):
     for i in range(3):
         f.readline()
     strt = [f.readline().split()[1] for i in range(num_lines-4)]
-    print strt[0:3]
     t = [float(i)/1000000 for i in strt]
     return t

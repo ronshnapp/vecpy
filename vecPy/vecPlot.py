@@ -13,14 +13,14 @@ import numpy as np
 from numpy import *
 from matplotlib.pylab import *
 import matplotlib.pylab as mpl
-import numpy as np
 from matplotlib import pyplot as plt
 from matplotlib import animation
 from os import chdir, getcwd, listdir
 plt.rcParams['animation.ffmpeg_path'] = 'C:/ffmpeg/bin/ffmpeg.exe'
 from scipy.ndimage.filters import median_filter
 
-def genQuiver(vec, arrScale = 25.0, threshold = None, nthArr = 1, contourLevels = None):
+def genQuiver(vec, arrScale = 25.0, threshold = None, nthArr = 1, 
+              contourLevels = None, colorbar = True, logscale = False):
     """
     Generates a quiver plot of a 'vec' object
     Inputs:   
@@ -28,6 +28,8 @@ def genQuiver(vec, arrScale = 25.0, threshold = None, nthArr = 1, contourLevels 
         arrScale - use to change arrow scales
         nthArr - use to plot only every nth arrow from the array 
         contourLevels - use to specify the maximum value (abs) of contour plots 
+        colbar - True/False wether to generate a colorbar or not
+        logscale - if true then colorbar is on log scale
     Outputs:
         none
     Usage:
@@ -46,12 +48,17 @@ def genQuiver(vec, arrScale = 25.0, threshold = None, nthArr = 1, contourLevels 
         levels = np.linspace(0, amax(S), 30) # default contour levels up to max of S
     else:
         levels = np.linspace(0, contourLevels, 30)
-        
-    mpl.contourf(vec.x,vec.y,S,alpha=0.8,
+    if logscale:
+        mpl.contourf(vec.x,vec.y,S,alpha=0.8,
+                 cmap=plt.cm.get_cmap("Blues"), 
+                 levels=levels, norm=matplotlib.colors.LogNorm())
+    else:
+        mpl.contourf(vec.x,vec.y,S,alpha=0.8,
                  cmap=plt.cm.get_cmap("Blues"), 
                  levels=levels)
-    cbar = mpl.colorbar()
-    cbar.set_label(r'$\left| \, V \, \right|$ ['+vec.lUnits+' $\cdot$ '+vec.tUnits+'$^{-1}$]')
+    if colorbar:
+        cbar = mpl.colorbar()
+        cbar.set_label(r'$\left| \, V \, \right|$ ['+vec.lUnits+' $\cdot$ '+vec.tUnits+'$^{-1}$]')
     n = nthArr
     mpl.quiver(vec.x[1::n,1::n],vec.y[1::n,1::n],
                u[1::n,1::n],v[1::n,1::n],units='width',
@@ -94,7 +101,8 @@ def genVelHist(vec):
     plt.tight_layout()
     
     
-def genVorticityMap(vec, threshold = None, contourLevels = None):
+def genVorticityMap(vec, threshold = None, contourLevels = None, 
+                    colorbar = True,  logscale = False):
     """ why do we rotate the vector before taking derivative? """
     # BUG:
     dUy = gradient(vec.u)[0]*cos(vec.theta)-gradient(vec.u)[1]*sin(vec.theta)
@@ -109,15 +117,22 @@ def genVorticityMap(vec, threshold = None, contourLevels = None):
         levels = np.linspace(-m, m, 30)
     else:
         levels = np.linspace(-contourLevels, contourLevels, 30)
-    plt.contourf(vec.x,vec.y,vorticity, levels=levels,
+        
+    if logscale:
+        plt.contourf(vec.x,vec.y,np.abs(vorticity), levels=levels,
+                 cmap = plt.cm.get_cmap('RdYlBu'), norm=matplotlib.colors.LogNorm())
+    else:
+        plt.contourf(vec.x,vec.y,vorticity, levels=levels,
                  cmap = plt.cm.get_cmap('RdYlBu'))
     plt.xlabel('x [' + vec.lUnits + ']')
     plt.ylabel('y [' + vec.lUnits + ']')
-    cbar = plt.colorbar()
-    cbar.set_label(r'$\omega$ [s$^{-1}$]')
+    if colorbar:
+        cbar = plt.colorbar()
+        cbar.set_label(r'$\omega$ [s$^{-1}$]')
 
 
-def genShearMap(vec, threshold = None, contourLevels = None):
+def genShearMap(vec, threshold = None, contourLevels = None, logscale = False,
+                colorbar = True):
     """this function plots a map of the xy strain e_xy"""
     dUy = gradient(vec.u)[0]*cos(vec.theta)-gradient(vec.u)[1]*sin(vec.theta)
     dVx = gradient(vec.v)[1]*cos(vec.theta)+gradient(vec.v)[0]*sin(vec.theta)
@@ -131,15 +146,22 @@ def genShearMap(vec, threshold = None, contourLevels = None):
         levels = np.linspace(-m, m, 30)
     else:
         levels = np.linspace(-contourLevels, contourLevels, 30)
-    plt.contourf(vec.x,vec.y,strain, levels=levels,
+        
+    if logscale:
+        plt.contourf(vec.x,vec.y,np.abs(strain), levels=levels,
+                 cmap = plt.cm.get_cmap('PRGn'), norm=matplotlib.colors.LogNorm())
+    else:
+        plt.contourf(vec.x,vec.y,strain, levels=levels,
                  cmap = plt.cm.get_cmap('PRGn'))
     plt.xlabel('x [' + vec.lUnits + ']')
     plt.ylabel('y [' + vec.lUnits + ']')
-    cbar = plt.colorbar()
-    cbar.set_label(r'$\epsilon_t$ [s$^{-1}$]')
+    if colorbar:
+        cbar = plt.colorbar()
+        cbar.set_label(r'$\epsilon_t$ [s$^{-1}$]')
     
 
-def genFlowAcceleration(vec, arrScale = 25.0, threshold = None, nthArr = 1, contourLevels = None):
+def genFlowAcceleration(vec, arrScale = 25.0, threshold = None, nthArr = 1,
+                        contourLevels = None, logscale = False, colorbar=True):
     """this function will plot a contour plot of
     the convective term of material derivative.
     i.e. it plots the magnitude of the vector 
@@ -160,11 +182,17 @@ def genFlowAcceleration(vec, arrScale = 25.0, threshold = None, nthArr = 1, cont
         levels = np.linspace(0, amax(S), 30)
     else:
         levels = np.linspace(0, contourLevels, 30)
-    mpl.contourf(vec.x,vec.y,S,alpha=0.5,
+    if logscale:
+        mpl.contourf(vec.x,vec.y,S,alpha=0.5,
+                 cmap=plt.cm.get_cmap("OrRd"), 
+                 levels=levels, norm=matplotlib.colors.LogNorm())
+    else:
+        mpl.contourf(vec.x,vec.y,S,alpha=0.5,
                  cmap=plt.cm.get_cmap("OrRd"), 
                  levels=levels)
-    cbar = mpl.colorbar()
-    cbar.set_label(r'$\left| \, \left( V\cdot \nabla \right) \cdot V \, \right|$ ['+
+    if colorbar:
+        cbar = mpl.colorbar()
+        cbar.set_label(r'$\left| \, \left( V\cdot \nabla \right) \cdot V \, \right|$ ['+
                    vec.lUnits+' $\cdot$ '+vec.tUnits+'$^{-2}$]')
     n = nthArr
     mpl.quiver(vec.x[1::n,1::n],vec.y[1::n,1::n],
