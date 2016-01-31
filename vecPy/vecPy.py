@@ -121,13 +121,9 @@ class vec:
         
     def getVelStat(self):
         """
-        assuming normaly distributed values of U and V in the
-        data, this method calculates its mean and standard
+        this method calculates the data anssambles mean and standard
         deviation values and assigns them to new atribtes
         of the instance vec.
-        this methid does not take into account values of 
-        the velocity that insight had spotted as irregular
-        values (aka CHC=-1)
         """
         # we need to use numpy way:
         
