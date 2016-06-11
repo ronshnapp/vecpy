@@ -28,6 +28,52 @@ def get_dt(fname,path):
     dt = float(header[ind1:].split('"')[1])
     return dt
 
+def get_units(fname, path):
+    """ given a .vec file this will return the names of length and velocity units """
+    # os.chdir(path) BUG
+    fname = os.path.join(os.path.abspath(path),fname) # just make a full path name 
+    # new way of opening and closing the file
+    with open(fname) as f:
+        header = f.readline()
+    
+    ind2= header.find('VARIABLES=')
+    ind3 = header.find('"X',ind2)
+    ind4 = header.find('"',ind3+1)
+    header[ind3:ind4+1]
+    lUnits = header[ind3+3:ind4]
+    # print lUnits
+
+#     ind3 = header.find('"Y',ind2)
+#     ind4 = header.find('"',ind3+1)
+#     header[ind3:ind4+1]
+#     lUnits = header[ind3+3:ind4]
+#     print lUnits
+
+    ind3 = header.find('"U',ind2)
+    ind4 = header.find('"',ind3+1)
+    header[ind3:ind4+1]
+    velUnits = header[ind3+3:ind4]
+    # print velUnits
+    
+    tUnits = velUnits.split('/')[1]
+# 
+#     ind3 = header.find('"V',ind2)
+#     ind4 = header.find('"',ind3+1)
+#     header[ind3:ind4+1]
+#     velUnits = header[ind3+3:ind4]
+#     print velUnits
+
+    # fallback if nothing is read properly
+    if lUnits is None:
+        lUnits = 'mm'
+    if velUnits is None:
+        velUnits = 'm/s'
+    if tUnits is None:
+        tUnits = 's'
+    
+    return lUnits, velUnits, tUnits
+
+
 def get_data(fname,path):
     """this function gathers and retuens the data found in
     a single .vec file"""
@@ -79,17 +125,18 @@ def vecToMatrix(data):
     
     return (X,Y,u1,v1,chc)
 
-def vecToVec(fname,path,lUnits='m',tUnits='s'):
+def vecToVec(fname,path):
     """ 
     generate directly the vec class object from a vec file
     """
     X,Y,U,V,CHC = vecToMatrix(get_data(fname,path))
     dt = get_dt(fname,path)
+    lUnits, velUnits, tUnits = get_units(fname,path)
     vector = vec(X,Y,U,V,CHC,dt,lUnits=lUnits,tUnits=tUnits)
     return vector
     
         
-def getVecList(path, resolution=1, LUnits='mm',crop=False,rotate=False,Filter=True):
+def getVecList(path, resolution=1, crop=False,rotate=False,Filter=True):
     """
     this function returns a list of vec instances
     for each .vec file in directory 'path'
