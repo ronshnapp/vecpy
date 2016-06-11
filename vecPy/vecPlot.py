@@ -9,13 +9,7 @@ velocity attributes of the .vec files that were open.
 use this code over vec objects.
 """
 
-from numpy import linspace, amax, sqrt, gradient, cos, sin
-from matplotlib.pyplot import colorbar, get_cmap, subplots, contourf
-
 import numpy as np
-from numpy import *
-from matplotlib.pylab import *
-import matplotlib.pylab as mpl
 from matplotlib import pyplot as plt
 from matplotlib import animation
 from os import chdir, getcwd, listdir
@@ -24,7 +18,7 @@ from scipy.ndimage.filters import median_filter
 
 def genQuiver(vec, arrScale = 25.0, threshold = None, nthArr = 1, 
               contourLevels = None, colbar = True, logscale = False,
-              aspectratio='equal'):
+              aspectratio='equal', colbar_orient = 'vertical'):
     """
     Generates a quiver plot of a 'vec' object
     Inputs:   
@@ -35,6 +29,7 @@ def genQuiver(vec, arrScale = 25.0, threshold = None, nthArr = 1,
         colbar - True/False wether to generate a colorbar or not
         logscale - if true then colorbar is on log scale
         aspectratio - set auto or equal for the plot's apearence
+        colbar_orient - 'horizontal' or 'vertical' orientation of the colorbar (if colbar is True)
     Outputs:
         none
     Usage:
@@ -47,32 +42,37 @@ def genQuiver(vec, arrScale = 25.0, threshold = None, nthArr = 1,
         u = thresholdArray(u, threshold)
         v = thresholdArray(v, threshold)
         
-    S = sqrt(u**2 + v**2)
+    S = np.sqrt(u**2 + v**2)
     
-    f, ax = subplots()     
+    f = plt.get_fignums()
+    if f is None: # if no figure is open
+        f, ax = plt.subplots() # open a new figure
+    else:
+        ax = plt.gca()     
     
     if contourLevels is None:
-        levels = linspace(0, amax(S), 30) # default contour levels up to max of S
+        levels = np.linspace(0, np.max(S), 30) # default contour levels up to max of S
     else:
-        levels = linspace(0, contourLevels, 30)
+        levels = np.linspace(0, contourLevels, 30)
     if logscale:
         c = ax.contourf(vec.x,vec.y,S,alpha=0.8,
-                 cmap = get_cmap("Blues"), 
-                 levels=levels, norm=matplotlib.colors.LogNorm())
+                 cmap = plt.get_cmap("Blues"), 
+                 levels = levels, norm = matplotlib.colors.LogNorm())
     else:
         c = ax.contourf(vec.x,vec.y,S,alpha=0.8,
-                 cmap = get_cmap("Blues"), 
+                 cmap = plt.get_cmap("Blues"), 
                  levels=levels)
     if colbar:
-        cbar = colorbar(c)
+        cbar = plt.colorbar(c, orientation=colbar_orient)
         cbar.set_label(r'$\left| \, V \, \right|$ ['+vec.lUnits+' $\cdot$ '+vec.tUnits+'$^{-1}$]')
     n = nthArr
     ax.quiver(vec.x[1::n,1::n],vec.y[1::n,1::n],
                u[1::n,1::n],v[1::n,1::n],units='width',
-               scale=amax(S*arrScale),headwidth=2 )
+               scale = np.max(S*arrScale),headwidth=2)
     ax.set_xlabel('x [' + vec.lUnits + ']')
     ax.set_ylabel('y [' + vec.lUnits + ']')
     ax.set_aspect(aspectratio)
+    return f,ax
     
     
 def genFluctuationQuiver(vec):
