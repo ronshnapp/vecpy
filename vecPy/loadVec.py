@@ -43,7 +43,7 @@ def get_data_openpiv(fname,path):
     """this function gathers and retuens the data found in
     a single .txt file"""
     fname = os.path.join(os.path.abspath(path),fname)
-    if fname.endswith('.txt'): 
+    if fname.endswith('.vec'): 
         data = genfromtxt(fname,usecols=(0,1,2,3,4))
     else:
         raise 'Wrong file extension'
