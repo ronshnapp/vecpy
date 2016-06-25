@@ -11,6 +11,7 @@ use this code over vec objects.
 
 from numpy import linspace, amax, sqrt, gradient, cos, sin
 from matplotlib.pyplot import colorbar, get_cmap, subplots, contourf
+from scipy.interpolate import interp2d
 
 import numpy as np
 from numpy import *
@@ -40,6 +41,7 @@ def genQuiver(vec, arrScale = 25.0, threshold = None, nthArr = 1,
     Usage:
         vecplot.genQuiver(vec, arrScale = 0.2, threshold = Inf, n)
     """
+    
     u = vec.u
     v = vec.v
     
@@ -72,7 +74,8 @@ def genQuiver(vec, arrScale = 25.0, threshold = None, nthArr = 1,
                scale=amax(S*arrScale),headwidth=2 )
     ax.set_xlabel('x [' + vec.lUnits + ']')
     ax.set_ylabel('y [' + vec.lUnits + ']')
-    ax.set_aspect(aspectratio)
+    ax.set_aspect(aspectratio)       
+
     
     
 def genFluctuationQuiver(vec):
@@ -255,4 +258,7 @@ def thresholdArray(array, th):
     for i in range(len(index[0])):
         array[index[0][i],index[1][i]] = th*sign(array[index[0][i],index[1][i]])
     return array
+    
+
+    
     
