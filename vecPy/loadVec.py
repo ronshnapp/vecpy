@@ -9,7 +9,7 @@ extended by Ron Shnapp 24.5.15
 import os
 #import numpy as np
 #from numpy import *
-from numpy import genfromtxt, meshgrid, shape, reshape
+from numpy import genfromtxt, meshgrid, shape, reshape, where, zeros
 #import matplotlib.pylab as mpl
 #import matplotlib.pyplot as plt
 from vecPy import vec
@@ -73,11 +73,12 @@ def vecToMatrix(data):
     x = patternize(data[:,0])
     y = patternize(data[:,1])
     X,Y = meshgrid(x,y)
-    u1 = reshape(data[:,2],shape(X))
-    v1 = reshape(data[:,3],shape(Y))*-1
-    chc = reshape(data[:,4],shape(X))
-    
-    return (X,Y,u1,v1,chc)
+    U,V,CHC = zeros(X.shape), zeros(X.shape), zeros(X.shape)
+    for row in range(len(data[:,0])):
+        x,y,u,v,chc = data[row,:]
+        j,i = where(X==x)[1][0], where(Y==y)[0][0]
+        U[i,j],V[i,j],CHC[i,j] = u,v,chc
+    return (X,Y,U,V,CHC)
 
 def vecToVec(fname,path,lUnits='m',tUnits='s'):
     """ 
