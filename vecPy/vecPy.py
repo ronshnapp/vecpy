@@ -17,8 +17,8 @@ class vec:
             CHC is some marker of bad vectors
             theta is not so clear but it's a global orientation angle, in degrees
             properties:
-            lUnits, default is 'm'
-            tUnits, default is 's'
+            lUnits, default is meter - 'm'
+            tUnits, default is seconds - 's'
             velUnits, derived from  lUnits, tUnits
         """
         self.x = x
@@ -66,11 +66,11 @@ class vec:
         vector from [px/frame] to [m/sec] or any similar
         - resolution should be in [length/px]
         - time is generated from the original file and
-          it is in seconds - BUG: MICROSECONDS?
+          it is in microseconds
         """
         self.x = self.x*resolution
         self.y = self.y*resolution
-        self.u = self.u*resolution/(self.dt*1e-6) #BUG: MICROSECONDS?
+        self.u = self.u*resolution/(self.dt*1e-6)
         self.v = self.v*resolution/(self.dt*1e-6)
         
     def move(self,dx,dy):
