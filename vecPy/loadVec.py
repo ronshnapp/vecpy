@@ -154,7 +154,7 @@ def getVecList(path, resolution=1, crop=False,rotate=False,Filter=True):
         if '.vec' in n:
             X,Y,U,V,CHC = vecToMatrix(get_data(n,path))
             dt = get_dt(n,path)
-            vector = vec(X,Y,U,V,CHC,dt,lUnits=LUnits)
+            vector = vec(X,Y,U,V,CHC,dt,lUnits=lUnits)
             vector.scale(resolution)
             if Filter: vector.filterVelocity('med',5)
             if rotate: vector.rotate(rotate)
