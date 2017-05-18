@@ -38,7 +38,7 @@ class vec:
     def get_dt(self):
         return self.dt
     
-    def set_Lunits(self,Lunits = 'm'):
+    def set_Lunits(self,lUnits = 'm'):
         self.lUnits = lUnits # default is meter
     
     def set_tUnits(self,tUnits = 's'):
