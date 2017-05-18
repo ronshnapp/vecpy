@@ -128,7 +128,7 @@ def genVorticityMap(vec, threshold = None, contourLevels = None,
     
     if threshold != None:
         vorticity = thresholdArray(vorticity,threshold)
-    m = amax(absolute(vorticity))
+    m = amax(abs(vorticity))
     if contourLevels == None:
         levels = linspace(-m, m, 30)
     else:
@@ -161,7 +161,7 @@ def genShearMap(vec, threshold = None, contourLevels = None, logscale = False,
     
     if threshold != None:
         strain = thresholdArray(strain,threshold)
-    m = amax(absolute(strain))
+    m = amax(abs(strain))
     if contourLevels == None:
         levels = linspace(-m, m, 30)
     else:
@@ -255,7 +255,7 @@ def animateVecList(vecList, arrowscale=1, savepath=None):
     else: anim.save('im.mp4', writer=mywriter)  
     
 def thresholdArray(array, th):
-    index = where(absolute(array)>th)
+    index = where(abs(array)>th)
     for i in range(len(index[0])):
         array[index[0][i],index[1][i]] = th*sign(array[index[0][i],index[1][i]])
     return array
