@@ -55,7 +55,11 @@ def get_units(fname, path):
     velUnits = header[ind3+3:ind4]
     # print velUnits
     
-    tUnits = velUnits.split('/')[1]
+#    tUnits = velUnits.split('/')[1]
+    if velUnits == 'pixel':
+        tUnits = 'dt'
+    else:
+        tUnits = velUnits.split('/')[1]
 # 
 #     ind3 = header.find('"V',ind2)
 #     ind4 = header.find('"',ind3+1)
