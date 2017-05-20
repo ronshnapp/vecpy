@@ -2,7 +2,7 @@
 
 from vecPy import loadVec
 from vecPy import vecPlot
-from vecPy.vecPy import vec
+from vecPy.vecPy import Vec
 import matplotlib.pyplot as plt
 
 
@@ -11,7 +11,7 @@ lst = loadVec.read_directory(test_dir)
 data = loadVec.get_data(lst[3],test_dir)
 dt = loadVec.get_dt(lst[3],test_dir)
 x,y,u,v,chc = loadVec.vecToMatrix(data)
-vec = vec(x,y,u,v,chc,dt,lUnits='mm',tUnits = 's')
+vec = Vec(x,y,u,v,chc,dt,lUnits='mm',tUnits = 's')
 
 
 resolution = 1.0/71.96 #[mm/px]

@@ -12,8 +12,9 @@ import os
 from numpy import genfromtxt, meshgrid, shape, reshape, where, zeros
 #import matplotlib.pylab as mpl
 #import matplotlib.pyplot as plt
-from vecPy import vec
+from vecPy import Vec
 from string import upper, lower
+
 
 def get_dt(fname,path):
     """given a .vec file this will return the delta t 
@@ -89,14 +90,25 @@ def get_data(fname,path):
         
     return data
     
-def get_data_openpiv(fname,path):
+def get_data_openpiv_txt(fname,path):
     """this function gathers and retuens the data found in
-    a single .txt file"""
+    a single .txt file created by OpenPIV"""
     fname = os.path.join(os.path.abspath(path),fname)
-    if fname.endswith('.vec'): 
+    if os.path.isfile(fname) and fname.endswith('.txt'): 
         data = genfromtxt(fname,usecols=(0,1,2,3,4))
     else:
-        raise 'Wrong file extension'
+        raise ValueError('Wrong file or file extension')
+    
+    return data
+    
+def get_data_openpiv_vec(fname,path):
+    """this function gathers and retuens the data found in
+    a single .vec file created by OpenPIV"""
+    fname = os.path.join(os.path.abspath(path),fname)
+    if os.path.isfile(fname) and fname.endswith('.vec'): 
+        data = genfromtxt(fname,usecols=(0,1,2,3,4))
+    else:
+        raise ValueError('Wrong file or file extension')
     
     return data
 	
