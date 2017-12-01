@@ -13,11 +13,13 @@ from numpy import linspace, amax, sqrt, gradient, cos, sin
 from matplotlib.pyplot import colorbar, get_cmap, subplots, contourf
 
 import numpy as np
-from matplotlib import pyplot as plt
+import matplotlib.pyplot as plt
 from matplotlib import animation, colors
 from os import chdir, getcwd
 plt.rcParams['animation.ffmpeg_path'] = 'C:/ffmpeg/bin/ffmpeg.exe'
 from scipy.ndimage.filters import median_filter
+
+
 
 def genQuiver(vec, arrScale = 25.0, threshold = None, nthArr = 1, 
               contourLevels = None, colbar = True, logscale = False,
@@ -48,9 +50,9 @@ def genQuiver(vec, arrScale = 25.0, threshold = None, nthArr = 1,
         
     S = np.sqrt(u**2 + v**2)
     
-    f = plt.get_fignums()
-    if f is None: # if no figure is open
-        f, ax = plt.subplots() # open a new figure
+    fig = plt.get_fignums()
+    if len(fig) == 0: # if no figure is open
+        fig, ax = plt.subplots() # open a new figure
     else:
         ax = plt.gca()     
     
@@ -76,9 +78,63 @@ def genQuiver(vec, arrScale = 25.0, threshold = None, nthArr = 1,
     ax.set_xlabel('x [' + vec.lUnits + ']')
     ax.set_ylabel('y [' + vec.lUnits + ']')
     ax.set_aspect(aspectratio)       
-    return f,ax
+    return fig,ax
     
     
+
+
+def quiverVecList(vec_list, shape = None, arrScale = 25.0, threshold = None,
+                  nthArr = 1, contourLevels = None, colbar = True, 
+                  logscale = False, aspectratio='equal'):
+    '''
+    will plot quiver plots from a list of vec instances, as subplots in 
+    a sigle figure
+    '''
+    N = len(vec_list)
+    if shape == None:
+        rows = min(N, 3)
+        cols = np.ceil(1.0*N/rows)
+    elif type(shape) == tuple and len(shape)==2:
+        row, cols = shape
+    else:
+        raise ValueError('bad input - shape is either tuple of None')
+        
+    fig = plt.figure() 
+    ax = [fig.add_subplot(cols, rows, i) for i in range(N)]
+        
+    XY = vec_list[0].x, vec_list[0].y
+    UV_list = [(i.u, i.v) for i in vec_list]
+    S_list = [ np.sqrt(i[0]**2 + i[1]**2) for i in UV_list]
+    
+    S_max = np.amax( max(S_list, key=np.amax) )
+        
+    if contourLevels is None:
+        levels = np.linspace(0, S_max, 30) # default contour levels up to max of S
+    else:
+        levels = np.linspace(0, contourLevels, 30)
+    
+    for i in range(N):
+        a = ax[i]
+        a.set_aspect(aspectratio) 
+        if logscale:
+            c = a.contourf(XY[0], XY[1], S_list[i], alpha=0.8,
+                            cmap = plt.get_cmap("Blues"), 
+                            levels = levels, norm = colors.LogNorm())
+        else:
+            c = a.contourf(XY[0], XY[1], S_list[i], alpha=0.8,
+                            cmap = plt.get_cmap("Blues"), levels=levels)
+        n = nthArr
+        a.quiver(XY[0][1::n,1::n],XY[1][1::n,1::n],
+               UV_list[i][0][1::n,1::n],UV_list[i][1][1::n,1::n],units='width',
+               scale = S_max*arrScale, headwidth=2)
+        a.set_xlabel('x [' + vec_list[0].lUnits + ']')
+        a.set_ylabel('y [' + vec_list[0].lUnits + ']')
+        a.set_aspect(aspectratio) 
+    plt.tight_layout()
+    return fig, ax
+
+
+
 def genFluctuationQuiver(vec):
     """
     generate a quiver plot of velocity fluctuation
@@ -99,7 +155,8 @@ def genFluctuationQuiver(vec):
     plt.ylabel('y [' + vec.lUnits + ']')
     
     
-def genVelHist(vec):
+    
+def genVelHist(vec, normed = False):
     """
     this function will plot a normalized histogram of
     the velocity data.
@@ -107,13 +164,15 @@ def genVelHist(vec):
     u1, v1 = vec.u.flatten(), vec.v.flatten()
     f,ax = subplots(2)
     ax1,ax2 = ax
-    ax1.hist(u1,bins=sqrt(len(u1))*0.5,normed=1)
+    ax1.hist(u1,bins=int(sqrt(len(u1))*0.5),normed=normed)
     ax1.set_xlabel('u ['+vec.velUnits+']')
     ax2 = plt.subplot2grid((2,1),(1,0))
-    ax2.hist(v1,bins=sqrt(len(v1)*0.5),normed=1)
+    ax2.hist(v1,bins=int(sqrt(len(v1)*0.5)),normed=normed)
     ax2.set_xlabel('v ['+vec.velUnits+']')
     plt.tight_layout()
-    
+    return f, ax1, ax2
+
+
     
 def genVorticityMap(vec, threshold = None, contourLevels = None, 
                     colbar = True,  logscale = False, aspectration='equal'):
@@ -147,6 +206,7 @@ def genVorticityMap(vec, threshold = None, contourLevels = None,
         cbar = colorbar(c)
         cbar.set_label(r'$\omega$ [s$^{-1}$]')
     ax.set_aspect(aspectration)
+    return f,ax
 
 
 def genShearMap(vec, threshold = None, contourLevels = None, logscale = False,
@@ -180,7 +240,8 @@ def genShearMap(vec, threshold = None, contourLevels = None, logscale = False,
         cbar = colorbar(c)
         cbar.set_label(r'$\epsilon_t$ [s$^{-1}$]')
     ax.set_aspect(aspectratio)
-    
+    return f, ax
+
 
 def genFlowAcceleration(vec, arrScale = 25.0, threshold = None, nthArr = 1,
                         contourLevels = None, logscale = False, 
@@ -209,7 +270,7 @@ def genFlowAcceleration(vec, arrScale = 25.0, threshold = None, nthArr = 1,
     if logscale:
         c = axs.contourf(vec.x,vec.y,S,alpha=0.5,
                  cmap = get_cmap("OrRd"), 
-                 levels=levels, norm=matplotlib.colors.LogNorm())
+                 levels=levels, norm=colors.LogNorm())
     else:
         c = axs.contourf(vec.x,vec.y,S,alpha=0.5,
                  cmap = get_cmap("OrRd"), 
@@ -219,13 +280,15 @@ def genFlowAcceleration(vec, arrScale = 25.0, threshold = None, nthArr = 1,
         cbar.set_label(r'$\left| \, \left( V\cdot \nabla \right) \cdot V \, \right|$ ['+
                    vec.lUnits+' $\cdot$ '+vec.tUnits+'$^{-2}$]')
     n = nthArr
-    mpl.quiver(vec.x[1::n,1::n],vec.y[1::n,1::n],
+    axs.quiver(vec.x[1::n,1::n],vec.y[1::n,1::n],
                ax[1::n,1::n],ay[1::n,1::n],units='width',
                scale=amax(S)*arrScale,headwidth=2 )
-    mpl.xlabel('x [' + vec.lUnits + ']')
-    mpl.ylabel('y [' + vec.lUnits + ']')
+    axs.set_xlabel('x [' + vec.lUnits + ']')
+    axs.set_ylabel('y [' + vec.lUnits + ']')
     axs.set_aspect(aspectratio)
-    
+    return f,axs
+
+
 def animateVecList(vecList, arrowscale=1, savepath=None):
     X, Y = vecList[0].x, vecList[0].y
     U, V = vecList[0].u, vecList[0].v
@@ -255,6 +318,8 @@ def animateVecList(vecList, arrowscale=1, savepath=None):
         anim.save('im.mp4', writer=mywriter)
         chdir(p)
     else: anim.save('im.mp4', writer=mywriter)  
+    
+    
     
 def thresholdArray(array, th):
     index = np.where(abs(array)>th)

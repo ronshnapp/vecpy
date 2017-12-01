@@ -4,7 +4,7 @@ Created on Sun May 24 22:02:49 2015
 
 @author: Ron
 """
-from numpy import sin, cos, pi, asarray, array, shape, zeros
+from numpy import sin, cos, pi, asarray, array, shape, zeros, logical_and
 from scipy.stats import norm
 from scipy.ndimage.filters import gaussian_filter
 from scipy.ndimage.filters import median_filter
@@ -31,6 +31,64 @@ class Vec:
         self.tUnits = tUnits
         self.velUnits = lUnits + '/' + tUnits
         self.theta = 0.0 # what is theta ? 
+    
+    
+    def __add__(self,other):
+        '''
+        addition of velocity fields. note that only a matching shape of the 
+        data is checked. all the rest is the user's responsibility.
+        '''
+        if self.x.shape == other.x.shape:
+            new_inst = Vec(self.x, self.y, 
+                           self.u + other.u, self.v + other.v,
+                           logical_and(self.chc, other.chc),
+                           self.dt, lUnits= self.lUnits, tUnits= self.tUnits)
+            return new_inst
+        else:
+            raise ValueError('cannot add - vec the shapes dont match')
+    
+    
+    def __sub__(self,other):
+        '''
+        subtraction of velocity fields. note that only a matching shape of the 
+        data is checked. all the rest is the user's responsibility.
+        '''
+        if self.x.shape == other.x.shape:
+            new_inst = Vec(self.x, self.y, 
+                           self.u - other.u, self.v - other.v,
+                           logical_and(self.chc, other.chc),
+                           self.dt, lUnits= self.lUnits, tUnits= self.tUnits)
+            return new_inst
+        else:
+            raise ValueError('cannot add - vec the shapes dont match')
+    
+    
+    def __mul__(self,scalar):
+        '''
+        multiplication of a velocity field by a scalar (simple scaling)
+        '''
+        new_inst = Vec(self.x, self.y, 
+                       self.u * scalar, self.v * scalar, self.chc, self.dt,
+                       lUnits= self.lUnits, tUnits= self.tUnits)
+        return new_inst
+    
+    
+    def __rmul__(self,scalar):
+        '''
+        multiplication of a velocity field by a scalar (simple scaling)
+        '''
+        new_inst = Vec(self.x, self.y, 
+                       self.u * scalar, self.v * scalar, self.chc, self.dt,
+                       lUnits= self.lUnits, tUnits= self.tUnits)
+        return new_inst
+    
+    
+    def __div__(self, scalar):
+        new_inst = Vec(self.x, self.y, 
+                       self.u / scalar, self.v / scalar, self.chc, self.dt,
+                       lUnits= self.lUnits, tUnits= self.tUnits)
+        return new_inst
+        
     
     def set_dt(self,dt):
         self.dt = dt
