@@ -153,14 +153,25 @@ def vecToVec(fname,path):
     return vector
     
         
-def getVecList(path, resolution=1, crop=False,rotate=False,Filter=True):
+def getVecList(path, fnames = None, resolution=1, 
+               crop=False, rotate=False,Filter=True):
     """
-    this function returns a list of vec instances
-    for each .vec file in directory 'path'
+    this function returns a list of vec instances from .vec files. Use this 
+    if you want to analize a bunch of vec files together
     
-    use this if you want to analize a bunch of vec files
+    inputs - 
+    
+    path (string) - path to the directory that holds the data
+    fnames (None or list of strings) - if None, returns all the .vec files in
+           path. If list will return vec instances for the data in each file
+           name
     """
-    fnames = os.listdir(path)  
+    if fnames == None:
+        fnames = os.listdir(path)  
+    else:
+        if type(fnames) != list:
+            raise TypeError('fnames should be a list of strings, of None')
+
     lst = []
     for n in fnames:
         if '.vec' in n:
