@@ -62,7 +62,7 @@ class Vec:
         
     def scale(self,resolution):
         """
-        use this method to fux the resolution of the 
+        use this method to change the resolution of the 
         vector from [px/frame] to [m/sec] or any similar
         - resolution should be in [length/px]
         - time is generated from the original file and
@@ -85,7 +85,7 @@ class Vec:
     def crop(self,xmin,xmax,ymin,ymax):
         """
         this method is used to crop a rectangular section 
-        of the vector field difined as the region between 
+        of the vector field defined as the region between 
         (xmin,ymin) and (xmax,ymax) 
         """
         temp = []
@@ -121,16 +121,14 @@ class Vec:
         
     def getVelStat(self):
         """
-        this method calculates the data anssambles mean and standard
+        this method calculates the data's ensamble mean and standard
         deviation values and assigns them to new atribtes
         of the instance vec.
         """
-        # we need to use numpy way:
-        
-        u = self.u.flatten()
-        v = self.v.flatten()
+        u,v = self.u.flatten(), self.v.flatten()
         self.Umean, self.Ustd = norm.fit(u)
         self.Vmean, self.Vstd = norm.fit(v)
+        
         
     def filterVelocity(self,filtr = 'med',size=(4,4)):
         """
@@ -147,7 +145,9 @@ class Vec:
         elif filtr == 'gauss':
             self.u = gaussian_filter(self.u,1)
             self.v = gaussian_filter(self.v,1)
-        else: print "Bad choise of filter! - try again"
+        else:
+            raise ValueError('Wrong filter. Choose Either "med" or "gauss"')
+        
         
 class vecList(list):
     def __init__(self):

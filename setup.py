@@ -12,7 +12,7 @@ setup(
     name = "vecPy",
     version = "0.0.0.2",
     author = "Ron Shnapp",
-    author_email = "ron@shnapp.com",
+    author_email = "ronshnapp@gmail.com",
     description = ("Post processing of PIV vector files "
                                    " eventually going into OpenPIV "),
     license = "BSD",

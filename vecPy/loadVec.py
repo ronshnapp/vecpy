@@ -9,7 +9,7 @@ extended by Ron Shnapp 24.5.15
 import os
 #import numpy as np
 #from numpy import *
-from numpy import genfromtxt, meshgrid, shape, reshape, where, zeros
+from numpy import genfromtxt, meshgrid, where, zeros
 #import matplotlib.pylab as mpl
 #import matplotlib.pyplot as plt
 from vecPy import Vec
@@ -149,7 +149,7 @@ def vecToVec(fname,path):
     X,Y,U,V,CHC = vecToMatrix(get_data(fname,path))
     dt = get_dt(fname,path)
     lUnits, velUnits, tUnits = get_units(fname,path)
-    vector = vec(X,Y,U,V,CHC,dt,lUnits=lUnits,tUnits=tUnits)
+    vector = Vec(X,Y,U,V,CHC,dt,lUnits=lUnits,tUnits=tUnits)
     return vector
     
         
@@ -166,7 +166,7 @@ def getVecList(path, resolution=1, crop=False,rotate=False,Filter=True):
         if '.vec' in n:
             X,Y,U,V,CHC = vecToMatrix(get_data(n,path))
             dt = get_dt(n,path)
-            vector = vec(X,Y,U,V,CHC,dt)
+            vector = Vec(X,Y,U,V,CHC,dt)
             vector.scale(resolution)
             if Filter: vector.filterVelocity('med',5)
             if rotate: vector.rotate(rotate)

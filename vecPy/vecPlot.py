@@ -11,11 +11,11 @@ use this code over vec objects.
 
 from numpy import linspace, amax, sqrt, gradient, cos, sin
 from matplotlib.pyplot import colorbar, get_cmap, subplots, contourf
-from scipy.interpolate import interp2d
+
 import numpy as np
 from matplotlib import pyplot as plt
-from matplotlib import animation
-from os import chdir, getcwd, listdir
+from matplotlib import animation, colors
+from os import chdir, getcwd
 plt.rcParams['animation.ffmpeg_path'] = 'C:/ffmpeg/bin/ffmpeg.exe'
 from scipy.ndimage.filters import median_filter
 
@@ -61,7 +61,7 @@ def genQuiver(vec, arrScale = 25.0, threshold = None, nthArr = 1,
     if logscale:
         c = ax.contourf(vec.x,vec.y,S,alpha=0.8,
                  cmap = plt.get_cmap("Blues"), 
-                 levels = levels, norm = matplotlib.colors.LogNorm())
+                 levels = levels, norm = colors.LogNorm())
     else:
         c = ax.contourf(vec.x,vec.y,S,alpha=0.8,
                  cmap = plt.get_cmap("Blues"), 
@@ -82,7 +82,7 @@ def genQuiver(vec, arrScale = 25.0, threshold = None, nthArr = 1,
 def genFluctuationQuiver(vec):
     """
     generate a quiver plot of velocity fluctuation
-    i.e. velocity-mean_velocity.    
+    i.e. velocity - mean_velocity.    
     """
     vec.getVelStat()
     u,v = vec.u-vec.Umean,vec.v-vec.Vmean
@@ -93,9 +93,10 @@ def genFluctuationQuiver(vec):
                  levels=levels)
     cbar = colorbar()
     cbar.set_label(r'Velocity [m $\cdot$ s$^{-1}$]')
-    mpl.quiver(vec.x, vec.y, u, v, units='width',scale=amax(sqrt(u**2+v**2))*25.0,headwidth=2 )
-    mpl.xlabel('x [' + vec.lUnits + ']')
-    mpl.ylabel('y [' + vec.lUnits + ']')
+    plt.quiver(vec.x, vec.y, u, v, units='width',
+               scale=amax(sqrt(u**2+v**2))*25.0,headwidth=2 )
+    plt.xlabel('x [' + vec.lUnits + ']')
+    plt.ylabel('y [' + vec.lUnits + ']')
     
     
 def genVelHist(vec):
@@ -136,7 +137,7 @@ def genVorticityMap(vec, threshold = None, contourLevels = None,
         
     if logscale:
         c = ax.contourf(vec.x,vec.y,np.abs(vorticity), levels=levels,
-                 cmap = get_cmap('RdYlBu'), norm=matplotlib.colors.LogNorm())
+                 cmap = get_cmap('RdYlBu'), norm=colors.LogNorm())
     else:
         c = ax.contourf(vec.x,vec.y,vorticity, levels=levels,
                  cmap = get_cmap('RdYlBu'))
@@ -169,7 +170,7 @@ def genShearMap(vec, threshold = None, contourLevels = None, logscale = False,
         
     if logscale:
         c = ax.contourf(vec.x,vec.y,np.abs(strain), levels=levels,
-                 cmap = get_cmap('PRGn'), norm=matplotlib.colors.LogNorm())
+                 cmap = get_cmap('PRGn'), norm = colors.LogNorm())
     else:
         c = ax.contourf(vec.x,vec.y,strain, levels=levels,
                  cmap = get_cmap('PRGn'))
@@ -236,7 +237,8 @@ def animateVecList(vecList, arrowscale=1, savepath=None):
                  units='inches', scale=arrowscale)
     cb = colorbar(Q)
     cb.ax.set_ylabel('velocity ['+vecList[0].lUnits+'/'+vecList[0].tUnits+']')
-    text = ax.text(0.2,1.05, '1/'+str(len(vecList)), ha='center', va='center', transform=ax.transAxes)
+    text = ax.text(0.2,1.05, '1/'+str(len(vecList)), ha='center', va='center',
+                   transform=ax.transAxes)
     def update_quiver(num,Q,vecList,text):
         U,V = vecList[num].u[::3,::3],vecList[num].v[::3,::3]
         M = sqrt(pow(U, 2) + pow(V, 2))   
@@ -255,9 +257,9 @@ def animateVecList(vecList, arrowscale=1, savepath=None):
     else: anim.save('im.mp4', writer=mywriter)  
     
 def thresholdArray(array, th):
-    index = where(abs(array)>th)
+    index = np.where(abs(array)>th)
     for i in range(len(index[0])):
-        array[index[0][i],index[1][i]] = th*sign(array[index[0][i],index[1][i]])
+        array[index[0][i],index[1][i]] = th*np.sign(array[index[0][i],index[1][i]])
     return array
     
 
